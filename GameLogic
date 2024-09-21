@@ -13,16 +13,15 @@ enum class CellState {
     OCCUPIED_O, // Coverts to int 0
     OCCUPIED_X, // int 1
     EMPTY,  // int 2
-    WINNING // int 3
 };
 
 class Cell {
 public:
-    std::string name;
-    int position;
-    CellState state = CellState::EMPTY;
-    Cell* next;
-    bool flagged = false;
+    std::string name; // Name of game 
+    int position; // Position of the cell on the grid. Can hold 1 trhu 9
+    CellState state = CellState::EMPTY; // State of a cell. Can hold OCCUPIED_O, OCCUPIED_X, EMPTY
+    Cell* next; // Pointer to the next cell in the list
+    bool flagged = false; // Whether or not cell has been used
 
     Cell(const std::string& name, int position) 
         : name(name), position(position), next(nullptr) {}
@@ -94,17 +93,17 @@ void Cell::printGrid(const Cell* list) {
 
 bool Cell::checkWin(const Cell* list, bool turn) {
     std::set<int> mySet = {};
-    int win = false;
+    int win = false; // whether game is won
     if (list == nullptr) {
         std::cout << "empty list\n";
     } else {
-        const Cell* curr = list;
+        const Cell* curr = list; // Declare pointer to the first cell in the list
         int column = 1;
-        while (curr != nullptr) {
-            if (static_cast<int>(curr->state) == turn){ //Add all occupied positions for the selected turn to a set
-                mySet.insert(curr->position); 
+        while (curr != nullptr) { // while the pointer does not point to a valid memory location
+            if (static_cast<int>(curr->state) == turn){// If occupied cell for the selected turn
+                mySet.insert(curr->position); // Add cell position to a set
             }
-            curr = curr->next;
+            curr = curr->next; // Pointer points to next cell in list 
         }
     }
     if (mySet.count(1) && mySet.count(2) && mySet.count(3) || mySet.count(4) && mySet.count(5) && mySet.count(6) || mySet.count(7) && mySet.count(8) && mySet.count(9) 
@@ -121,8 +120,6 @@ bool Cell::checkWin(const Cell* list, bool turn) {
     }
 
     return win;
-
-    // std::cout << "NULL\n\n";
 }
 
 int Cell::checkWinPossibility(const Cell* list, bool turn) {
@@ -258,15 +255,15 @@ else if (mySet.count(5) && mySet.count(7) && mySet2.count(3)) {
 
 bool Cell::checkGridFull(const Cell* list) {
     std::set<int> mySet = {};
-    bool gridFull = false;
+    bool gridFull = false; // whether grid is fullly occupied
     if (list == nullptr) {
         std::cout << "empty list\n";
     } else {
-        const Cell* curr = list;
+        const Cell* curr = list; // pointer points at first cell object in list
         int column = 1;
-        while (curr != nullptr) {
-             if (static_cast<int>(curr->state) != 2){ // Adds positions of all occupied cells to set regardless of X or O
-                mySet.insert(curr->position);
+        while (curr != nullptr) { // while the pointer does not point to a valid object or memory location
+             if (static_cast<int>(curr->state) != 2){ // If occupied cell either X or O
+                mySet.insert(curr->position); // Add cell position to set
                 }
             curr = curr->next;
         }
@@ -280,17 +277,17 @@ bool Cell::checkGridFull(const Cell* list) {
 
 bool Cell::checkCorners(const Cell* list) {
     std::set<int> mySet = {};
-    int cornersOccupied = false;
+    int cornersOccupied = false; // whether all gird corner positions are occupied
     if (list == nullptr) {
         std::cout << "empty list\n";
     } else {
         const Cell* curr = list;
         int column = 1;
-        while (curr != nullptr) {
-                if (static_cast<int>(curr->state) != 2){ // Adds positions of all occupied cells to set regardless of X or O
-                mySet.insert(curr->position);
+        while (curr != nullptr) { // While pointer does not point to a valid object or memory location
+                if (static_cast<int>(curr->state) != 2){ // If occupied cell either X or O
+                mySet.insert(curr->position);  // Add cell position to set
                  }
-            curr = curr->next;
+            curr = curr->next; // Point pointer to next cell in list
         }
     }
 
@@ -307,7 +304,7 @@ bool Cell::OccupyCell(Cell* list, int position, bool turn) {
         std::cout << "empty list\n";
     } else {
         Cell* curr = list;
-        while (curr != nullptr) {
+        while (curr != nullptr) { // while the pointer does not point to a valid object or memory location
             if (curr->position ==  position){
                 if (curr->flagged == false){
                     curr->state = static_cast<CellState>(static_cast<int>(turn));
@@ -323,10 +320,10 @@ bool Cell::OccupyCell(Cell* list, int position, bool turn) {
 }
 
 void Cell::deleteList(Cell*& list) {
-    while (list != nullptr) {
-        Cell* next = list->next;
-        delete list;
-        list = next;
+    while (list != nullptr) { // while not at end of list
+        Cell* next = list->next; // Point pointer at cell list points at
+        delete list; // delete object list points at
+        list = next; //list now points at object next points at
     }
 }
 
@@ -344,19 +341,6 @@ void Cell::printFile(const std::string& filename) {
     }
 }
 
-// double Cell::maxGrade(const Cell* list) {
-//     if (list == nullptr) return 0.0;
-//     double max = list->position;
-//     const Cell* curr = list;
-//     while (curr != nullptr) {
-//         if (curr->position > max) {
-//             max = curr->position;
-//         }
-//         curr = curr->next;
-//     }
-//     return max;
-// }
-
 int generate1379(int num){
 int generated;
     if (num == 1){ 
@@ -373,7 +357,7 @@ int generated;
 
 Grid Grid::createGrid(const std::string& name) {
     Cell* head = Cell::createCell("S9", 9); // Create head cell 
-    head = Cell::pushData("S8", 8, head); // Create and link eight additional cells to create the board
+    head = Cell::pushData("S8", 8, head); // Create and link 8 additional cells to list to create the grid
     head = Cell::pushData("S7", 7, head);
     head = Cell::pushData("S6", 6, head);
     head = Cell::pushData("S5", 5, head);
@@ -386,16 +370,16 @@ Grid Grid::createGrid(const std::string& name) {
 
 void Grid::playGame(){
     std::string answer;
-    int position;
-    turn = false;
-    bool valid;
+    int position; // cell position on grid
+    turn = false; // game turn. set to AI turn by default
+    bool valid; // whether move is valid
     bool halt = false;
-    int randomNumber;
+    int randomNumber; 
     std::srand(std::time(0)); // seed the random number generator
     Cell::printGrid(head);
-    bool win = false;
-    bool tie = false;
-    bool gridFull = false;
+    bool win = false; // whether game is won 
+    bool tie = false; // whether game is tied 
+    bool gridFull = false; // whether grid is fully occupied
 
 
     while(!(win||tie||halt)){
@@ -452,7 +436,7 @@ void Grid::playGame(){
 
 
     Cell::deleteList(head); // Delete the list of cell objects to prevent memory leaks
-    head = nullptr;
+    head = nullptr; // set initial pointer to nullptr
     std::cout << ("\n");
 
 }
