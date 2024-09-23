@@ -15,7 +15,7 @@ Tic-Tac-Toe with AI Opponent
 
 3. Compile the project:
    ```bash
-   g++ -o ac_game gamelogic.cpp
+   gcc -o ac_game gamelogic.cpp
 
    
 ## Usage
