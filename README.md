@@ -14,6 +14,7 @@ Tic-Tac-Toe with AI Opponent
    cd repository-name
 
 3. Compile the project:
+   ```bash
    g++ -o ac_game main.cpp
 
    
