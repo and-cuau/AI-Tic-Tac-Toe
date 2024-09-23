@@ -7,15 +7,15 @@ Tic-Tac-Toe with AI Opponent
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/repository-name.git
+   git clone https://github.com/and-cuau/AI-Tic-Tac-Toe.git
    
 2. Navigate into the project directory:
     ```bash
-   cd repository-name
+   cd directory
 
 3. Compile the project:
    ```bash
-   g++ -o ac_game main.cpp
+   g++ -o ac_game gamelogic.cpp
 
    
 ## Usage
