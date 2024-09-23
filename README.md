@@ -4,7 +4,7 @@ Tic-Tac-Toe with AI Opponent
 
 
 
-##Installation
+## Installation
 1. Clone the repository:
    ```bash
    git clone https://github.com/yourusername/repository-name.git
@@ -18,5 +18,5 @@ Tic-Tac-Toe with AI Opponent
    g++ -o ac_game main.cpp
 
    
-##Usage
+## Usage
 ./ac_game
