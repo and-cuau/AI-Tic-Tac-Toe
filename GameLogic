@@ -6,6 +6,7 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <vector>
 
 int numGames = 0;
 
@@ -18,7 +19,7 @@ enum class CellState {
 class Cell {
 public:
     std::string name; // Name of game 
-    int position; // Position of the cell on the grid. Can hold 1 trhu 9
+    int position; // Position of the cell on the grid. Can hold 1 thru 9
     CellState state = CellState::EMPTY; // State of a cell. Can hold OCCUPIED_O, OCCUPIED_X, EMPTY
     Cell* next; // Pointer to the next cell in the list
     bool flagged = false; // Whether or not cell has been used
@@ -36,6 +37,7 @@ public:
     static bool checkCorners(const Cell* list);
     static bool checkGridFull(const Cell* list);
     static bool OccupyCell(Cell* list, int position, bool turn);
+    static bool UnOccupyCell(Cell* list, int position);
     static void deleteList(Cell*& list);
     static void printFile(const std::string& filename);
     static double maxGrade(const Cell* list);
@@ -260,13 +262,13 @@ int Cell::checkNumWins(const Cell* list, bool turn) {
     std::set<int> mySet2 = {};
     int winPosition = 0;
     int numWins = 0;
+    int pos;
     if (list == nullptr) {
         std::cout << "empty list\n";
     } else {
         const Cell* curr = list;
         int column = 1;
         while (curr != nullptr) {
-
             if (static_cast<int>(curr->state) == turn){
                 mySet.insert(curr->position);
                 //std::cout << "[" << static_cast<int>(curr->state) << "] ";
@@ -400,7 +402,6 @@ if (mySet.count(1) && mySet.count(5) && mySet2.count(9)) {
     winPosition = 3;
     numWins++;
 }
-
     return numWins;
    
 }
@@ -474,6 +475,27 @@ bool Cell::OccupyCell(Cell* list, int position, bool turn) {
     return valid;
 }
 
+bool Cell::UnOccupyCell(Cell* list, int position) {
+    bool valid = false;
+    if (list == nullptr) {
+        std::cout << "empty list\n";
+    } else {
+        Cell* curr = list; // declare a pointer to point at first cell in list
+        while (curr != nullptr) { // while the pointer does not point to a valid object or memory location
+            if (curr->position ==  position){ // if the cell's position is equal to the selected position
+                if (curr->flagged == true){ // if the cell IS already occupied
+                    
+                    curr->state = CellState::EMPTY; // Set the state of the input position to match the input turn
+                    curr->flagged = false; // set flagged 
+                    valid = true; // a valid cell position was input
+                }
+            }
+            curr = curr->next; // curr points to next cell in the list
+        }
+    }
+    return valid;
+}
+
 void Cell::deleteList(Cell*& list) {
     while (list != nullptr) { // while not at end of list
         Cell* next = list->next; // Point pointer at cell list points at
@@ -495,6 +517,28 @@ void Cell::printFile(const std::string& filename) {
         std::cout << "name: " << name << ", position: " << position << "\n";
     }
 }
+
+std::vector<int> maxWins(int arr[], int size) {
+    // Initialize the largest value to the first element of the array
+    int max= arr[0];
+    int posMax = 0;
+    std::vector<int> vector;
+    // Iterate thu the array
+    for (int i = 1; i < size; ++i) {
+        if (arr[i] > max) {
+            max = arr[i]; // Update max if a larger value is found
+           // posMax = i;
+        }
+    }
+
+    for (int i = 1; i < size; ++i) { // Add to an empty vector the positions of all corners with maximum # of win possibilities
+        if (arr[i] == max) {
+            vector.push_back(i);
+        }
+    }
+    return vector; // Return vector
+}
+
 
 int generate1379(int num){
 int generated;
@@ -559,7 +603,7 @@ void Grid::playGame(){
     }
 
 
-
+ //std::vector<int> vector();  ???? unresolved Q about assignment of function return to this
     while(!(win||tie||halt)){
     if (turn == false){
         std::cout << "Grid Master enter a position \n";
@@ -568,16 +612,47 @@ void Grid::playGame(){
         } else  if ((position = Cell::checkWinPossibility(head, !turn)) !=0 ){ // Check if player is able to in with single move
         Cell::OccupyCell(head, position, turn);   // Occupy player's winning cell
         } else if (!Cell::checkCorners(head)){
-            randomNumber = std::rand() % 4 + 1; // generates number from 1 to 4
-            position = generate1379(randomNumber); // convert to one of 4 corner positions
-
-            valid = Cell::OccupyCell(head, position, turn); // Occupy random corner
-
-            while (!valid){
-            randomNumber = std::rand() % 4 + 1; // generates number from 1 to 4
-            position = generate1379(randomNumber); // convert to one of 4 corner positions
-            valid = Cell::OccupyCell(head, position, turn); // Occupy random corner
+            int b;
+            int numWins[4];
+           
+            for (int i = 0; i < 4; i++){
+                position = generate1379(i+1);
+                //std::cout << "\n";
+                valid = Cell::OccupyCell(head, position, turn);
+                //std::cout << "TEST: ";
+                //std::cout << "\n";
+                //Cell::printGrid(head);
+                if (valid){
+                b = Cell::checkNumWins(head, turn);
+                numWins[i] = b;
+                //std::cout << b << " ";
+                    Cell::UnOccupyCell(head, position);
+                }
+                else {
+                    numWins[i] = 0; 
+                }
+                
             }
+            //std::cout << numWins;
+
+             
+            std::vector<int> vector2 = maxWins(numWins, 4); 
+            int randomIndex = rand() % vector2.size(); // Generate a random index
+            position = vector2[randomIndex]; // Access the value at that index
+
+
+
+
+
+
+            //std::cout << position;
+            // std::cout << numWins[0];
+            // std::cout << numWins[1];
+            // std::cout << numWins[2];
+            //std::cout << numWins[3];
+
+            position = generate1379(position + 1);
+            valid = Cell::OccupyCell(head, position, turn); // corner
         }
         else{
             Cell::OccupyCell(head, 5, turn); // Occupy center cell
