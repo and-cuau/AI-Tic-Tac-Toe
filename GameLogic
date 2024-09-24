@@ -4,6 +4,8 @@
 #include <set>
 #include <ctime>
 #include <iostream>
+#include <thread>
+#include <chrono>
 #include <vector>
 
 int numGames = 0;
@@ -570,7 +572,6 @@ void Grid::playGame(){
     int position; // cell position on grid
     turn = false; // game turn. set to AI turn by default
     bool valid; // whether move is valid
-    bool halt = false;
     int randomNumber; 
     std::srand(std::time(0)); // seed the random number generator
     // Cell::printGrid(head);
@@ -603,7 +604,7 @@ void Grid::playGame(){
 
 
  //std::vector<int> vector();  ???? unresolved Q about assignment of function return to this
-    while(!(win||tie||halt)){
+    while(!(win||tie)){
     if (turn == false){
         std::cout << "Grid Master enter a position \n";
         if ((position = Cell::checkWinPossibility(head, turn)) != 0){ // Check if AI is able to win in single move
