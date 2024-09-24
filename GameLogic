@@ -4,8 +4,6 @@
 #include <set>
 #include <ctime>
 #include <iostream>
-#include <thread>
-#include <chrono>
 #include <vector>
 
 int numGames = 0;
@@ -524,14 +522,14 @@ std::vector<int> maxWins(int arr[], int size) {
     int posMax = 0;
     std::vector<int> vector;
     // Iterate thu the array
-    for (int i = 1; i < size; ++i) {
+    for (int i = 0; i < size; i++) {
         if (arr[i] > max) {
             max = arr[i]; // Update max if a larger value is found
            // posMax = i;
         }
     }
 
-    for (int i = 1; i < size; ++i) { // Add to an empty vector the positions of all corners with maximum # of win possibilities
+    for (int i = 0; i < size; i++) { // Add to an empty vector the positions of all corners with maximum # of win possibilities
         if (arr[i] == max) {
             vector.push_back(i);
         }
@@ -580,9 +578,10 @@ void Grid::playGame(){
     bool tie = false; // whether game is tied 
     bool gridFull = false; // whether grid is fully occupied
     int ans;
+    int randomIndex;
 
 
-    std::cout << "Welcome to Andre's Tic-Tac-Toe. You will play against an AI opponent named Grid Master. The grid cells are numbered 1 through 9. On your turn, use the corresponding keys to place a marker on the grid.\n\n";
+    std::cout << "\nWelcome to Andre's Tic-Tac-Toe. You will play against an AI opponent named Grid Master. The grid cells are numbered 1 through 9. On your turn, use the corresponding keys to place a marker on the grid.\n\n";
     
     std::cout << "[1] [2] [3]\n";
     std::cout << "[4] [5] [6]\n";
@@ -636,14 +635,11 @@ void Grid::playGame(){
             //std::cout << numWins;
 
              
-            std::vector<int> vector2 = maxWins(numWins, 4); 
-            int randomIndex = rand() % vector2.size(); // Generate a random index
+            std::vector<int> vector2 = maxWins(numWins, 4);
+2           std::cout << rand() << "\n";
+            std::cout << vector2.size() << "\n";
+            randomIndex = rand() % vector2.size(); // Generate a random index
             position = vector2[randomIndex]; // Access the value at that index
-
-
-
-
-
 
             //std::cout << position;
             // std::cout << numWins[0];
