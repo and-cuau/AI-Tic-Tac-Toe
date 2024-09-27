@@ -122,7 +122,7 @@ bool Cell::checkWin(const Cell* list, bool turn) {
       )// Passes only if set contains winning combination of positions
       {
         if (turn){ //Displays win message depending on selected turn
-             std::cout << "X wins!\n";
+             std::cout << "Player wins!\n";
         }else{
              std::cout << "Grid Master wins!\n";
         }
@@ -629,8 +629,7 @@ void Grid::playGame(){
                 //std::cout << "\n";
                 //Cell::printGrid(head);
                 if (valid){
-                b = Cell::checkNumWins(head, turn);
-                numWins[i] = b;
+                numWins[i]  = Cell::checkNumWins(head, turn);
                 //std::cout << b << " ";
                     Cell::UnOccupyCell(head, position);
                 }
@@ -737,7 +736,7 @@ int main() {
     // }
     
 
-    int response;
+    char response;
 
 
 
@@ -745,16 +744,18 @@ int main() {
     
     grid1.playGame(); // Play a game using grid object
 
-    std::cout << "Press '1' to exit";
+    std::cout << "Press '1' to play again. Press '2' to exit game.";
     std::cin >> response;
 
 
-    // while (response != '2'){
-    //     Grid grid2 = Grid::createGrid("2");
-    //      grid2.playGame();
-    // }
+    while (response == '1'){
+         Grid grid2 = Grid::createGrid("2");
+         grid2.playGame();
+         std::cout << "Press '1' to play again. Press '2' to exit game.";
+         std::cin >> response;
+    }
 
-
+    std::cout << "Thanks for playing!";
     //Grid grid2 = Grid::createGrid("Game 2"); // Create a second grid object
 
     //grid2.playGame(); // Play a game using grid object
