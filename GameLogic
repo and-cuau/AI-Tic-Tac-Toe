@@ -580,7 +580,7 @@ void Grid::playGame(){
     bool valid; // whether move is valid
     int randomNumber; 
     std::srand(std::time(0)); // seed the random number generator
-    // Cell::printGrid(head);
+  
     bool win = false; // whether game is won 
     bool tie = false; // whether game is tied 
     bool gridFull = false; // whether grid is fully occupied
@@ -623,14 +623,9 @@ void Grid::playGame(){
            
             for (int i = 0; i < 4; i++){
                 position = generate1379(i+1);
-                //std::cout << "\n";
                 valid = Cell::OccupyCell(head, position, turn);
-                //std::cout << "TEST: ";
-                //std::cout << "\n";
-                //Cell::printGrid(head);
                 if (valid){
                 numWins[i]  = Cell::checkNumWins(head, turn);
-                //std::cout << b << " ";
                     Cell::UnOccupyCell(head, position);
                 }
                 else {
@@ -638,20 +633,14 @@ void Grid::playGame(){
                 }
                 
             }
-            //std::cout << numWins;
+        
 
              
             std::vector<int> vector2 = maxWins(numWins, 4);
-            // std::cout << rand() << "\n";
-            // std::cout << vector2.size() << "\n";
+           
             randomIndex = rand() % vector2.size(); // Generate a random index
             position = vector2[randomIndex]; // Access the value at that index
 
-            //std::cout << position;
-            // std::cout << numWins[0];
-            // std::cout << numWins[1];
-            // std::cout << numWins[2];
-            //std::cout << numWins[3];
 
             position = generate1379(position + 1);
             valid = Cell::OccupyCell(head, position, turn); // corner
@@ -698,47 +687,8 @@ void Grid::playGame(){
 
 
 int main() {
-    // int server_fd, new_socket;
-    // struct sockaddr_in address;
-    // int opt = 1;
-    // int addrlen = sizeof(address);
-    // char buffer = sizeof(address);
-    // char buffer[1024] = {0};
-
-    // if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-    //     perror("socket failed");
-    //     exit(EXIT_FAILURE);
-    // }
-
-    // address.sin_family = AF_INET;
-    // address.sin_addr.s_addr = INADDR_ANY; // Bind to any available network interface
-    // address.sin_port = htons(PORT); // Convert to network byte order
-
-    // if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
-    //     perror("bind failed");
-    //     close(server_fd);
-    //     exit(EXIT_FAILURE);
-    // }
-
-    //   if (listen(server_fd, 3) < 0) {
-    //     perror("listen");
-    //     close(server_fd);
-    //     exit(EXIT_FAILURE);
-    // }
-
-    //  std::cout << "Waiting for a connection..." << std::endl;
-
-    // // Step 4: Accept a connection from a client
-    // if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
-    //     perror("accept");
-    //     close(server_fd);
-    //     exit(EXIT_FAILURE);
-    // }
-    
-
+  
     char response;
-
-
 
     Grid grid1 = Grid::createGrid("Game 1"); // Create a grid object
     
