@@ -635,7 +635,7 @@ void Grid::playGame(){
                     Cell::UnOccupyCell(head, position);
                 }
                 else {
-                    numWins[i] = 0; 
+                    numWins[i] = -1; 
                 }
                 
             }
