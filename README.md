@@ -1,5 +1,5 @@
 # AI-Tic-Tac-Toe
-Tic-Tac-Toe with two game modes. The first mode is single-player mode in which the player competes against an AI opoponent. The second mode is two-player mode in which the player competes a second player over LAN. 
+Tic-Tac-Toe with in C++ wih two game modes. The first mode is single-player mode in which the player competes against an AI opoponent. The second mode is two-player mode in which the player competes a second player over LAN. LAN connection is performed using the Boost.Asio library.
 
 
 ## Prerequisites
@@ -55,11 +55,11 @@ Tic-Tac-Toe with two game modes. The first mode is single-player mode in which t
 
 8. Open another terminal
 
-9. Run the tttclient object file:
+9. Run the tttclient object file again:
       ```bash
    ./tttclient
+
+
+10. Repeat steps 3.-9. excluding steps 3. and 6. to play again.
    
 
-   
-## Usage
-./ac_game
