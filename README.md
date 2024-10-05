@@ -4,6 +4,7 @@ Tic-Tac-Toe with in C++ wih two game modes. The first mode is single-player mode
 
 ## Prerequisites
 - C++ compiler (gcc, g++)
+- Windows
 
 
 # Installation
