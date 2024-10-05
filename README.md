@@ -7,7 +7,6 @@ Tic-Tac-Toe with two game modes. The first mode is single-player mode in which t
 
 
 ## Installation
-
 ## Download Boost
 1. Visit the Boost website: Go to the [Boost Downloads page](https://www.boost.org/users/download/).
 2. Download "boost_1_86_0.zip" zip file for Windows.
@@ -27,7 +26,7 @@ Tic-Tac-Toe with two game modes. The first mode is single-player mode in which t
    ./b2.exe
 
 
-## Download and run github files
+## Download and run GitHub files
 1. Clone the repository:
    ```bash
    git clone https://github.com/and-cuau/AI-Tic-Tac-Toe.git
