@@ -15,9 +15,7 @@ using boost::asio::ip::tcp;
 
 #include <iostream>
 
-// #include <sys/socket.h>
-// #include <netinet/in.h>
-// #include <unistd.h>
+
 #include <cstring>
 
 int numGames = 0;
@@ -152,11 +150,9 @@ int Cell::checkWinPossibility(const Cell* list, bool turn) {
 
             if (static_cast<int>(curr->state) == turn){
                 mySet.insert(curr->position);
-                //std::cout << "[" << static_cast<int>(curr->state) << "] ";
             } 
             if (static_cast<int>(curr->state) == 2){
                 mySet2.insert(curr->position);
-                //std::cout << "[" << static_cast<int>(curr->state) << "] ";
             }
 
             curr = curr->next;
@@ -267,7 +263,6 @@ else if (mySet.count(5) && mySet.count(7) && mySet2.count(3)) {
 
     return winPosition;
 
-    // std::cout << "NULL\n\n";
 }
 
 int Cell::checkNumWins(const Cell* list, bool turn) {
@@ -284,11 +279,9 @@ int Cell::checkNumWins(const Cell* list, bool turn) {
         while (curr != nullptr) {
             if (static_cast<int>(curr->state) == turn){
                 mySet.insert(curr->position);
-                //std::cout << "[" << static_cast<int>(curr->state) << "] ";
             } 
             if (static_cast<int>(curr->state) == 2){
                 mySet2.insert(curr->position);
-                //std::cout << "[" << static_cast<int>(curr->state) << "] ";
             }
 
             curr = curr->next;
@@ -540,7 +533,6 @@ std::vector<int> maxWins(int arr[], int size) {
     for (int i = 0; i < size; i++) {
         if (arr[i] > max) {
             max = arr[i]; // Update max if a larger value is found
-           // posMax = i;
         }
     }
 
@@ -580,7 +572,7 @@ Grid Grid::createGrid(const std::string& name) {
     return Grid(name, head);
 }
 
-void Grid::playAI(){ // THIS IS TIC TAC TOE LAN VERSION
+void Grid::playAI(){ 
     std::string answer;
     int position; // cell position on grid
     turn = false; // game turn. set to AI turn by default
@@ -616,7 +608,7 @@ void Grid::playAI(){ // THIS IS TIC TAC TOE LAN VERSION
     }
 
 
- //std::vector<int> vector();  ???? unresolved Q about assignment of function return to this
+ 
     while(!(win||tie)){
     if (turn == false){
         std::cout << "Grid Master enter a position. \n";
@@ -630,11 +622,9 @@ void Grid::playAI(){ // THIS IS TIC TAC TOE LAN VERSION
            
             for (int i = 0; i < 4; i++){
                 position = generate1379(i+1);
-                //std::cout << "\n";
+         
                 valid = Cell::OccupyCell(head, position, turn);
-                //std::cout << "TEST: ";
-                //std::cout << "\n";
-                //Cell::printGrid(head);
+           
                 if (valid){
                 numWins[i]  = Cell::checkNumWins(head, turn);
                 //std::cout << b << " ";
@@ -645,21 +635,15 @@ void Grid::playAI(){ // THIS IS TIC TAC TOE LAN VERSION
                 }
                 
             }
-            //std::cout << numWins;
+         
 
              
             std::vector<int> vector2 = maxWins(numWins, 4);
-            // std::cout << rand() << "\n";
-            // std::cout << vector2.size() << "\n";
+        
             randomIndex = rand() % vector2.size(); // Generate a random index
             position = vector2[randomIndex]; // Access the value at that index
 
-            //std::cout << position;
-            // std::cout << numWins[0];
-            // std::cout << numWins[1];
-            // std::cout << numWins[2];
-            //std::cout << numWins[3];
-
+     
             position = generate1379(position + 1);
             valid = Cell::OccupyCell(head, position, turn); // corner
         }
@@ -733,24 +717,55 @@ bool stringToBool(const std::string& str) {
    return str.find('1') != std::string::npos;
 }
 
+std::string intro()
+{
+std::string mode;
+std::cout << "\nWelcome to Andre's Tic-Tac-Toe. Please select a game mode. Enter '1' for single player mode (Play against an AI). Enter '2' for two player mode.\n";
+std::cin >> mode;
+return mode;
+}
 
-int main() { // THIS IS TIC TAC TOE LAN VERSION
+
+int main() { 
 
     std::string mode;
 
-    // std::cout << "Pick game mode\n";
-    //std::cin >> mode;
-    mode = "2";
+    mode = intro(); // prompt player to choose mode. return mode
+
+    
+
+
+    std::string response;
+    
+
+    if (mode == "1"){
+        Grid grid1 = Grid::createGrid("Game 1"); // Create a grid object
+    
+        grid1.playAI(); // Play a game using grid object
+
+        std::cout << "Press '1' to play again. Press '2' to exit game.";
+        std::cin >> response;
+
+
+    while (response == "1"){
+         Grid grid2 = Grid::createGrid("2");
+         grid2.playAI();
+         std::cout << "Press '1' to play again. Press '2' to exit game.";
+         std::cin >> response;
+    }
+
+        
+    }
+    else if (mode == "2"){
+
+   bool win = 0;
+   bool tie;
+   //bool turn = 0;
+   bool turn1 = 0;
+   std::string turnPosition;
+   std::string position;
 
     constexpr unsigned short PORT = 12345;
-    
-//     try
-//   {
-    // if (argc != 2)
-    // {
-    //   std::cerr << "Usage: client <host>" << std::endl;
-    //   return 1;
-    // }
 
     boost::asio::io_context io_context;
     tcp::resolver resolver(io_context);
@@ -770,79 +785,10 @@ int main() { // THIS IS TIC TAC TOE LAN VERSION
     std::cout << "You are connected as player " + message +".\n";
 
     turn = stringToBool(message);
-    std::cout << "turn0: " << turn << "\n";
 
 
+    printGrid("22222222");
 
-   // std::array<char, 128> buf0 = {'1'};
-    //boost::system::error_code error;  ///threw an error
-    //std::string mode = "1";
-
-    //socket.send(boost::asio::buffer(mode), 0, error);
-
-
-    // for (;;)
-    // {
-    //   std::array<char, 128> buf;
-    //   boost::system::error_code error;
-
-    //   //buf[0] = mode;
-
-    //   size_t len = socket.read_some(boost::asio::buffer(buf), error);
-    //  if (error == boost::asio::error::eof)
-    //     break; // Connection closed cleanly by peer.
-    //   else if (error)
-    //     throw boost::system::system_error(error); // Some other error.
-
-    //   //std::cout.write(buf.data(), len);
-    // }
-
-
-
-
-
-
-
-
-
-
-//   }
-//   catch (std::exception& e)
-//   {
-//     std::cerr << e.what() << std::endl;
-//   }
-
-
-
-    char response;
-    
-
-    if (mode == "1"){
-        Grid grid1 = Grid::createGrid("Game 1"); // Create a grid object
-    
-        grid1.playAI(); // Play a game using grid object
-
-        std::cout << "Press '1' to play again. Press '2' to exit game.";
-        std::cin >> response;
-
-
-    while (response == '1'){
-         Grid grid2 = Grid::createGrid("2");
-         grid2.playAI();
-         std::cout << "Press '1' to play again. Press '2' to exit game.";
-         std::cin >> response;
-    }
-
-        
-    }
-    else if (mode == "2"){
-   bool win = 0;
-   bool tie;
-   //bool turn = 0;
-   bool turn1 = 0;
-   std::string turnPosition;
-   std::string position;
-   printGrid("22222222");
 
       
             while (!(win||tie)){
@@ -852,11 +798,9 @@ int main() { // THIS IS TIC TAC TOE LAN VERSION
                 if (!turn){
                 std::cin >> position;
                 socket.send(boost::asio::buffer(position), 0, error);
-                //std::array<char, 128> buf;
-
-                //std::cout << "in between sending my pos and receiving feedback\n";
+        
                 }
-                // std::cout << "receiving feedback\n";
+           
                 
                 size_t len = socket.read_some(boost::asio::buffer(message), error);
            
@@ -873,9 +817,6 @@ int main() { // THIS IS TIC TAC TOE LAN VERSION
 
    
     std::cout << "Thanks for playing!";
-    //Grid grid2 = Grid::createGrid("Game 2"); // Create a second grid object
-
-    //grid2.playGame(); // Play a game using grid object
 
     return 0;
     
