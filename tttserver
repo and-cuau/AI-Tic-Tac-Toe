@@ -43,6 +43,7 @@ public:
     static Cell* createCell(const std::string& name, int position);
     static Cell* pushData(const std::string& name, int position, Cell* list);
     static void printGrid(const Cell* list);
+    static std::string getString(const Cell* list);
     static bool checkWin(const Cell* list, bool turn);
     static int checkWinPossibility(const Cell* list, bool turn);
     static int checkNumWins(const Cell* list, bool turn);
@@ -64,7 +65,8 @@ class Grid{
     public:
     Grid(const std::string& game, Cell*cellPtr) : game(game), head(cellPtr) {}
     static Grid createGrid(const std::string& name);
-    void playGame();
+    void playAI();
+    void playTwoPlayer();
     
 };
 
@@ -106,6 +108,55 @@ void Cell::printGrid(const Cell* list) {
     }
     // std::cout << "NULL\n\n";
 }
+
+std::string Cell::getString(const Cell* list) {
+    std::string gridStr = ""; //String representing board configuration
+    if (list == nullptr) {
+        std::cout << "empty list\n";
+    } else {
+        const Cell* curr = list;
+        while (curr != nullptr) {
+             if (static_cast<int>(curr->state) == 0){  // If the state of the cell is 0 print "[O] ""
+             gridStr += "0";
+             }
+             else if (static_cast<int>(curr->state) == 1){ // If the state of the cell is 1 print "[X] ""
+                gridStr += "1";
+             }
+             else{ // If the state of the cell is 2 print "[X] ""
+                gridStr += "2";
+             }
+            curr = curr->next;
+        }
+    }
+    return gridStr;
+}
+
+int stringToInt(const std::string& str) {
+    int num;
+    if (str == "1") {
+        num = 1;
+    } else if (str == "2") {
+        num = 2;
+    }
+    return num;
+}
+
+int getTurn(std::string turnPos) {
+    int turn;
+    if (turnPos[0] == '0'){turn = 0;}
+    else if (turnPos[1]== '1'){turn = 1;}
+    return turn;
+}
+
+int getPos(std::string turnPos) {
+    int position;
+    if (turnPos[1] == '1'){position = 1;}
+    else if (turnPos[1]== '9'){position = 9;}
+    return position;
+}
+
+
+
 
 bool Cell::checkWin(const Cell* list, bool turn) {
     std::set<int> mySet = {};
@@ -579,7 +630,7 @@ Grid Grid::createGrid(const std::string& name) {
     return Grid(name, head);
 }
 
-void Grid::playGame(){ // THIS IS TIC TAC TOE LAN VERSION
+void Grid::playAI(){ // THIS IS TIC TAC TOE LAN VERSION
     std::string answer;
     int position; // cell position on grid
     turn = false; // game turn. set to AI turn by default
@@ -594,7 +645,7 @@ void Grid::playGame(){ // THIS IS TIC TAC TOE LAN VERSION
     int randomIndex;
 
 
-    std::cout << "\nWelcome to Andre's Tic-Tac-Toe. You will play against an AI opponent named Grid Master. The grid cells are numbered 1 through 9. On your turn, use the corresponding keys to place a marker on the grid.\n\n";
+    std::cout << "\nYou have selected single-player mode against an AI. You will play against an AI opponent named Grid Master. The grid cells are numbered 1 through 9. On your turn, use the corresponding keys to place a marker on the grid.\n\n";
     
     std::cout << "[1] [2] [3]\n";
     std::cout << "[4] [5] [6]\n";
@@ -701,6 +752,173 @@ void Grid::playGame(){ // THIS IS TIC TAC TOE LAN VERSION
 
 }
 
+void Grid::playTwoPlayer(){ 
+    std::string answer;
+    int position; // cell position on grid
+    turn = 0; // game turn. set to AI turn by default
+    bool valid; // whether move is valid
+    int randomNumber; 
+    std::srand(std::time(0)); // seed the random number generator
+    // Cell::printGrid(head);
+    bool win = 0; // whether game is won 
+    bool tie = 0; // whether game is tied 
+    bool gridFull = false; // whether grid is fully occupied
+    int ans;
+    int randomIndex;
+
+    constexpr unsigned short PORT = 12345;
+    constexpr unsigned short PORT2 = 12346;
+
+
+    try{
+     boost::asio::io_context io_context;
+     //A ip::tcp::acceptor object needs to be created to listen for new connections. It is initialised to listen on TCP port 13, for IP version 4.
+    tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), PORT));
+     //This is an iterative server, which means that it will handle one connection at a time. Create a socket that will represent the connection to the client, and then wait for a connection.
+
+        tcp::socket socket(io_context);
+        acceptor.accept(socket);
+
+        std::string message(1024, '\0');
+        message = "0";
+        boost::system::error_code ignored_error;
+        boost::asio::write(socket, boost::asio::buffer(message), ignored_error);
+
+
+        tcp::acceptor acceptor2(io_context, tcp::endpoint(tcp::v4(), PORT));
+        tcp::socket socket2(io_context);
+        acceptor.accept(socket2);
+        
+
+        //std::string message(1024, '\0');     threw an error
+        message = "1";
+        //boost::system::error_code ignored_error;    threw an error
+        boost::asio::write(socket2, boost::asio::buffer(message), ignored_error);
+
+
+        for (;;)
+        {
+            std::string message(1024, '\0');
+           if (!turn){
+            // A client is accessing our service. Determine the current time and transfer this information to the client.
+            //std::string message = "";
+            //std::string message(1024, '\0');
+            size_t size = 1;
+            //socket.receive(boost::asio::buffer(boost::asio::buffer(message), size));
+            boost::system::error_code error;
+            socket.receive(boost::asio::buffer(message), 0, error);
+            position = std::stoi(message);
+            
+            valid = Cell::OccupyCell(head, position, turn);
+
+            win = Cell::checkWin(head, turn);
+
+
+           }
+           else{
+            
+            size_t size = 1;
+            //socket.receive(boost::asio::buffer(boost::asio::buffer(message), size));
+            boost::system::error_code error;
+            socket2.receive(boost::asio::buffer(message), 0, error);
+            position = std::stoi(message);
+            
+            valid = Cell::OccupyCell(head, position, turn);
+
+            win = Cell::checkWin(head, turn);
+
+
+           }
+
+            turn = !turn;
+
+            std::string gridStr = Cell::getString(head);
+
+            if (win){
+                 std::cout << "Win!\n";
+                 win = true;
+                 gridStr += "w";
+            }
+
+            gridFull = Cell::checkGridFull(head); // Check if every position on grid is occupied
+            if (gridFull && !win){ // If the grid is completely-occupied and neither AI nor player has won then set tie to true
+                tie = true;
+                std::cout << "It's a tie!\n";
+                gridStr += "t";
+            } 
+        
+            Cell::printGrid(head);
+           // std::cout << gridStr;
+
+            message = gridStr;
+            boost::system::error_code ignored_error;
+            boost::asio::write(socket, boost::asio::buffer(message), ignored_error);
+            boost::asio::write(socket2, boost::asio::buffer(message), ignored_error);
+        }
+  }
+//Finally, handle any exceptions.
+  catch (std::exception& e)
+  {
+    std::cerr << e.what() << std::endl;
+  }
+
+    std::cout << "exited try-catch and for-loop";
+
+    //std::cin >> ans;
+
+
+ //std::vector<int> vector();  ???? unresolved Q about assignment of function return to this
+    // while(!(win||tie)){
+    // if (turn == false){
+      
+    //     // handle incoming msg
+
+    //     valid = Cell::OccupyCell(head, position, turn); 
+
+
+    //     // while(!valid){  // While player-selected position is occupied repeat prompt and input until selected position is not occupied
+    //     //     Cell::printGrid(head);  
+    //     //     std::cout << "Err: Cannot select an occupied cell. Try again. \n";
+    //     //     std::cin >> position; 
+    //     //     //valid = Cell::OccupyCell(head, position, turn); 
+    //     // }
+              
+    
+    // }
+    // else{
+    
+    
+    //     valid = Cell::OccupyCell(head, position, turn); // Occupy selected position
+
+    //     while(!valid){  // While player-selected position is occupied repeat prompt and input until selected position is not occupied
+    //         Cell::printGrid(head);  
+    //         std::cout << "Err: Cannot select an occupied cell. Try again. \n";
+    //         std::cin >> position; 
+    //         valid = Cell::OccupyCell(head, position, turn); 
+    //     }
+              
+
+    // }
+        
+    //     win = Cell::checkWin(head, turn); // Check if the game has been won by either AI or player
+    //     gridFull = Cell::checkGridFull(head); // Check if every position on grid is occupied
+    //     if (gridFull && !win){ // If the grid is completely-occupied and neither AI nor player has won then set tie to true
+    //         tie = true;
+    //          std::cout << "It's a tie!\n";
+    //     } 
+
+    //     Cell::printGrid(head); // Print the grid 
+
+       
+    //     turn = !turn; // Switch AI to player turn or vice-versa
+    // }
+
+    Cell::deleteList(head); // Delete the list of cell objects to prevent memory leaks
+    head = nullptr; // set initial pointer to nullptr
+    std::cout << ("\n");
+
+}
+
 
 std::string make_daytime_string()
 {
@@ -709,71 +927,58 @@ std::string make_daytime_string()
   return ctime(&now);
 }
 
+
+char Intro()
+{
+char mode;
+std::cout << "\nWelcome to Andre's Tic-Tac-Toe. Please select a game mode. Enter '1' for single player mode (Play against an AI). Select '2' for two player mode.\n";
+std::cin >> mode;
+return mode;
+}
+
+
 using boost::asio::ip::tcp;
 int main(int argc, char* argv[]) { // THIS IS TIC TAC TOE LAN VERSION
-    
-   try
-  {
-    boost::asio::io_context io_context;
-//A ip::tcp::acceptor object needs to be created to listen for new connections. It is initialised to listen on TCP port 13, for IP version 4.
-
-    tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 13));
-//This is an iterative server, which means that it will handle one connection at a time. Create a socket that will represent the connection to the client, and then wait for a connection.
-
-    for (;;)
-    {
-      tcp::socket socket(io_context);
-      acceptor.accept(socket);
-// A client is accessing our service. Determine the current time and transfer this information to the client.
-
-      std::string message = "random";
-      size_t size = 6;
-
-
-       socket.receive(boost::asio::buffer(boost::asio::buffer(message), size));
-
-
-      boost::system::error_code ignored_error;
-      boost::asio::write(socket, boost::asio::buffer(message), ignored_error);
-    }
-  }
-//Finally, handle any exceptions.
-
-  catch (std::exception& e)
-  {
-    std::cerr << e.what() << std::endl;
-  }
-
-
-
-
-
-
-
 
     char response;
-
-
+    char mode = '2';
 
     Grid grid1 = Grid::createGrid("Game 1"); // Create a grid object
-    
-    grid1.playGame(); // Play a game using grid object
+
+    // mode = Intro();
+
+    if (mode == '1'){
+
+    grid1.playAI(); // Play a game using grid object
 
     std::cout << "Press '1' to play again. Press '2' to exit game.";
     std::cin >> response;
 
+        while (response == '1'){
+            Grid grid2 = Grid::createGrid("2");
+            grid2.playAI();
+            std::cout << "Press '1' to play again. Press '2' to exit game.";
+            std::cin >> response;
+        }
+    } else if(mode == '2'){
+          grid1.playTwoPlayer(); // Play a game using grid object
+          std::cout << "Press '1' to play again. Press '2' to exit game.";
+          std::cin >> response;
 
-    while (response == '1'){
-         Grid grid2 = Grid::createGrid("2");
-         grid2.playGame();
-         std::cout << "Press '1' to play again. Press '2' to exit game.";
-         std::cin >> response;
-    }
+        while (response == '1'){
+            Grid grid2 = Grid::createGrid("2");
+            grid2.playAI();
+            std::cout << "Press '1' to play again. Press '2' to exit game.";
+            std::cin >> response;
+        }
+
+   }
 
     std::cout << "Thanks for playing!";
     //Grid grid2 = Grid::createGrid("Game 2"); // Create a second grid object
 
     //grid2.playGame(); // Play a game using grid object
 
-    return 0;
+    return 0; // g++ -I"C:\Users\andre\CPP_TTT\boost_1_86_0" tttlan.cpp -o test_boost -L"C:\Users\andre\CPP_TTT\boost_1_86_0\stage\lib" -lstdc++ "C:\Users\andre\CPP_TTT\boost_1_86_0\stage\lib\libboost_system-vc143-mt-x64-1_86.lib" -lws2_32
 }
+
