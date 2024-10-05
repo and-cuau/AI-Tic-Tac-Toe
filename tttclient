@@ -703,29 +703,49 @@ void Grid::playAI(){ // THIS IS TIC TAC TOE LAN VERSION
 }
 
 
-void Grid::playTwoPlayer(){
-    
 
 
+static void printGrid(std::string gridStr){
+        std::cout << "\n";
+        int column = 1;
+        for (int i = 0; i < 9; i++) {
+             if (gridStr[i] == '0'){  // If the state of the cell is 0 print "[O] ""
+             std::cout << "[O] ";
+             }
+             else if (gridStr[i] == '1'){ // If the state of the cell is 1 print "[X] ""
+                std::cout << "[X] ";
+             }
+             else{ // If the state of the cell is 2 print "[X] ""
+                std::cout << "[ ] ";
+             }
 
+            if (column > 2){ // Formats the grid into rows starting a new row after each 3rd entry
+                std::cout << "\n";
+                column = 0;
+            }
+            column++;
+        
+        }
+        std::cout << "\n\n";
 }
 
-
-
-
+bool stringToBool(const std::string& str) {
+   return str.find('1') != std::string::npos;
+}
 
 
 int main() { // THIS IS TIC TAC TOE LAN VERSION
 
     std::string mode;
 
-    std::cout << "Pick game mode";
-    std::cin >> mode;
+    // std::cout << "Pick game mode\n";
+    //std::cin >> mode;
+    mode = "2";
 
     constexpr unsigned short PORT = 12345;
     
-    try
-  {
+//     try
+//   {
     // if (argc != 2)
     // {
     //   std::cerr << "Usage: client <host>" << std::endl;
@@ -742,13 +762,23 @@ int main() { // THIS IS TIC TAC TOE LAN VERSION
     tcp::socket socket(io_context);
     boost::asio::connect(socket, endpoints);
 
-    std::cout << "!!!!";
-    
-   // std::array<char, 128> buf0 = {'1'};
     boost::system::error_code error;
+    std::string message(1024, '\0');
+
+    size_t len = socket.read_some(boost::asio::buffer(message), error);
+    bool turn;
+    std::cout << "You are connected as player " + message +".\n";
+
+    turn = stringToBool(message);
+    std::cout << "turn0: " << turn << "\n";
+
+
+
+   // std::array<char, 128> buf0 = {'1'};
+    //boost::system::error_code error;  ///threw an error
     //std::string mode = "1";
 
-    socket.send(boost::asio::buffer(mode), 0, error);
+    //socket.send(boost::asio::buffer(mode), 0, error);
 
 
     // for (;;)
@@ -776,11 +806,11 @@ int main() { // THIS IS TIC TAC TOE LAN VERSION
 
 
 
-  }
-  catch (std::exception& e)
-  {
-    std::cerr << e.what() << std::endl;
-  }
+//   }
+//   catch (std::exception& e)
+//   {
+//     std::cerr << e.what() << std::endl;
+//   }
 
 
 
@@ -806,13 +836,40 @@ int main() { // THIS IS TIC TAC TOE LAN VERSION
         
     }
     else if (mode == "2"){
-   
+   bool win = 0;
+   bool tie;
+   //bool turn = 0;
+   bool turn1 = 0;
+   std::string turnPosition;
+   std::string position;
+   printGrid("22222222");
 
+      
+            while (!(win||tie)){
+                std::cout << "Player " << turn1 << " enter a position\n";
+                 std::string message(1024, '\0');
+                 boost::system::error_code error;
+                if (!turn){
+                std::cin >> position;
+                socket.send(boost::asio::buffer(position), 0, error);
+                //std::array<char, 128> buf;
 
+                //std::cout << "in between sending my pos and receiving feedback\n";
+                }
+                // std::cout << "receiving feedback\n";
+                
+                size_t len = socket.read_some(boost::asio::buffer(message), error);
+           
+                 printGrid(message);
+                 //std::cout << message;                   
+                    if (message[9] == 'w' || message[9] == 't'){
+                        break;
+                    }
+                turn = !turn;
+                turn1 = !turn1;
+            }
     }
 
-
-    
 
    
     std::cout << "Thanks for playing!";
@@ -821,4 +878,5 @@ int main() { // THIS IS TIC TAC TOE LAN VERSION
     //grid2.playGame(); // Play a game using grid object
 
     return 0;
+    
 }
