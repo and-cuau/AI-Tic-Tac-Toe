@@ -1,0 +1,824 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <set>
+#include <ctime>
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <vector>
+#include <iostream>
+#include <sys/types.h>
+
+#include <boost/asio.hpp>
+using boost::asio::ip::tcp;
+
+#include <iostream>
+
+// #include <sys/socket.h>
+// #include <netinet/in.h>
+// #include <unistd.h>
+#include <cstring>
+
+int numGames = 0;
+
+enum class CellState {
+    OCCUPIED_O, // Coverts to int 0
+    OCCUPIED_X, // int 1
+    EMPTY,  // int 2
+};
+
+class Cell {
+public:
+    std::string name; // Name of game 
+    int position; // Position of the cell on the grid. Can hold 1 thru 9
+    CellState state = CellState::EMPTY; // State of a cell. Can hold OCCUPIED_O, OCCUPIED_X, EMPTY
+    Cell* next; // Pointer to the next cell in the list
+    bool flagged = false; // Whether or not cell has been used
+    
+
+    Cell(const std::string& name, int position) 
+        : name(name), position(position), next(nullptr) {}
+
+    static Cell* createCell(const std::string& name, int position);
+    static Cell* pushData(const std::string& name, int position, Cell* list);
+    static void printGrid(const Cell* list);
+    static bool checkWin(const Cell* list, bool turn);
+    static int checkWinPossibility(const Cell* list, bool turn);
+    static int checkNumWins(const Cell* list, bool turn);
+    static bool checkCorners(const Cell* list);
+    static bool checkGridFull(const Cell* list);
+    static bool OccupyCell(Cell* list, int position, bool turn);
+    static bool UnOccupyCell(Cell* list, int position);
+    static void deleteList(Cell*& list);
+    static void printFile(const std::string& filename);
+    static double maxGrade(const Cell* list);
+};
+
+class Grid{
+    std::string game;
+    Cell *head; // The head of the list of cell objects
+    bool win; // Whether game has been won or not
+    bool turn; // Which turn it is
+
+    public:
+    Grid(const std::string& game, Cell*cellPtr) : game(game), head(cellPtr) {}
+    static Grid createGrid(const std::string& name);
+    void playAI();
+    void playTwoPlayer();
+    
+};
+
+
+Cell* Cell::createCell(const std::string& name, int position) {
+    return new Cell(name, position); // Returns a cell object with selected name and position
+}
+
+Cell* Cell::pushData(const std::string& name, int position, Cell* list) {
+    Cell* n = createCell(name, position); // Creates cell object
+    n->next = list; // Links cell object to list 
+    return n;
+}
+
+void Cell::printGrid(const Cell* list) {
+    if (list == nullptr) {
+        std::cout << "empty list\n";
+    } else {
+        const Cell* curr = list;
+        int column = 1;
+        while (curr != nullptr) {
+             if (static_cast<int>(curr->state) == 0){  // If the state of the cell is 0 print "[O] ""
+             std::cout << "[O] ";
+             }
+             else if (static_cast<int>(curr->state) == 1){ // If the state of the cell is 1 print "[X] ""
+                std::cout << "[X] ";
+             }
+             else{ // If the state of the cell is 2 print "[X] ""
+                std::cout << "[ ] ";
+             }
+
+            if (column > 2){ // Formats the grid into rows starting a new row after each 3rd entry
+                std::cout << "\n";
+                column = 0;
+            }
+            column++;
+            curr = curr->next;
+        }
+    }
+    // std::cout << "NULL\n\n";
+}
+
+bool Cell::checkWin(const Cell* list, bool turn) {
+    std::set<int> mySet = {};
+    int win = false; // whether game is won
+    if (list == nullptr) { // if the list of cells is empty
+        std::cout << "empty list\n";
+    } else {
+        const Cell* curr = list; // Declare pointer to the first cell in the list
+        int column = 1;
+        while (curr != nullptr) { // while the pointer does not point to a valid memory location
+            if (static_cast<int>(curr->state) == turn){// If cell is occupied by the selected turn
+                mySet.insert(curr->position); // Add cell position to a set
+            }
+            curr = curr->next; // Pointer points to next cell in list 
+        }
+    }
+    if (mySet.count(1) && mySet.count(2) && mySet.count(3) || mySet.count(4) && mySet.count(5) && mySet.count(6) || mySet.count(7) && mySet.count(8) && mySet.count(9) 
+    || mySet.count(1) && mySet.count(4) && mySet.count(7) || mySet.count(2) && mySet.count(5) && mySet.count(8) || mySet.count(3) && mySet.count(6) && mySet.count(9) 
+    || mySet.count(1) && mySet.count(5) && mySet.count(9) || mySet.count(3) && mySet.count(5) && mySet.count(7)
+      )// Passes only if set contains winning combination of positions
+      {
+        if (turn){ //Displays win message depending on selected turn
+             std::cout << "Player wins!\n";
+        }else{
+             std::cout << "Grid Master wins!\n";
+        }
+        win = true; // the game has been won
+    }
+
+    return win;
+}
+
+int Cell::checkWinPossibility(const Cell* list, bool turn) {
+    std::set<int> mySet = {};
+    std::set<int> mySet2 = {};
+    int winPosition = 0;
+    if (list == nullptr) {
+        std::cout << "empty list\n";
+    } else {
+        const Cell* curr = list;
+        int column = 1;
+        while (curr != nullptr) {
+
+            if (static_cast<int>(curr->state) == turn){
+                mySet.insert(curr->position);
+                //std::cout << "[" << static_cast<int>(curr->state) << "] ";
+            } 
+            if (static_cast<int>(curr->state) == 2){
+                mySet2.insert(curr->position);
+                //std::cout << "[" << static_cast<int>(curr->state) << "] ";
+            }
+
+            curr = curr->next;
+        }
+    }
+    
+    if (mySet.count(1) && mySet.count(2) && mySet2.count(3)) {
+    // Top row, missing square 3
+    winPosition = 3;
+
+
+}
+else if (mySet.count(1) && mySet.count(3) && mySet2.count(2)) {
+    // Top row, missing square 2
+     winPosition = 2;
+}
+else if (mySet.count(2) && mySet.count(3) && mySet2.count(1)) {
+    // Top row, missing square 1
+     winPosition = 1;
+}
+else if (mySet.count(4) && mySet.count(5) && mySet2.count(6)) {
+    // Middle row, missing square 6
+     winPosition = 6;
+}
+else if (mySet.count(4) && mySet.count(6) && mySet2.count(5)) {
+    // Middle row, missing square 5
+     winPosition = 5;
+}
+else if (mySet.count(5) && mySet.count(6) && mySet2.count(4)) {
+    // Middle row, missing square 4
+     winPosition = 4;
+}
+else if (mySet.count(7) && mySet.count(8) && mySet2.count(9)) {
+    // Bottom row, missing square 9
+    winPosition = 9;
+}
+else if (mySet.count(7) && mySet.count(9) && mySet2.count(8)) {
+    // Bottom row, missing square 8
+     winPosition = 8;
+}
+else if (mySet.count(8) && mySet.count(9) && mySet2.count(7)) {
+    // Bottom row, missing square 7
+    winPosition = 7;
+}
+else if (mySet.count(1) && mySet.count(4) && mySet2.count(7)) {
+    // Left column, missing square 7
+    winPosition = 7;
+}
+else if (mySet.count(1) && mySet.count(7) && mySet2.count(4)) {
+    // Left column, missing square 4
+     winPosition = 4;
+}
+else if (mySet.count(4) && mySet.count(7) && mySet2.count(1)) {
+    // Left column, missing square 1
+     winPosition = 1;
+}
+else if (mySet.count(2) && mySet.count(5) && mySet2.count(8)) {
+    // Middle column, missing square 8
+     winPosition = 8;
+}
+else if (mySet.count(2) && mySet.count(8) && mySet2.count(5)) {
+    // Middle column, missing square 5
+     winPosition = 5;
+}
+else if (mySet.count(5) && mySet.count(8) && mySet2.count(2)) {
+    // Middle column, missing square 2
+    winPosition = 2;
+}
+else if (mySet.count(3) && mySet.count(6) && mySet2.count(9)) {
+    // Right column, missing square 9
+     winPosition = 9;
+}
+else if (mySet.count(3) && mySet.count(9) && mySet2.count(6)) {
+    // Right column, missing square 6
+     winPosition = 6;
+}
+else if (mySet.count(6) && mySet.count(9) && mySet2.count(3)) {
+    // Right column, missing square 3
+     winPosition = 3;
+}
+else if (mySet.count(1) && mySet.count(5) && mySet2.count(9)) {
+    // Diagonal from top-left to bottom-right, missing square 9
+     winPosition = 9;
+}
+else if (mySet.count(1) && mySet.count(9) && mySet2.count(5)) {
+    // Diagonal from top-left to bottom-right, missing square 5
+     winPosition = 5;
+}
+else if (mySet.count(5) && mySet.count(9) && mySet2.count(1)) {
+    // Diagonal from top-left to bottom-right, missing square 1
+     winPosition = 1;
+}
+else if (mySet.count(3) && mySet.count(5) && mySet2.count(7)) {
+    // Diagonal from top-right to bottom-left, missing square 7
+     winPosition = 7;
+}
+else if (mySet.count(3) && mySet.count(7) && mySet2.count(5)) {
+    // Diagonal from top-right to bottom-left, missing square 5
+     winPosition = 5;
+}
+else if (mySet.count(5) && mySet.count(7) && mySet2.count(3)) {
+    // Diagonal from top-right to bottom-left, missing square 3
+    winPosition = 3;
+}
+
+
+
+
+    return winPosition;
+
+    // std::cout << "NULL\n\n";
+}
+
+int Cell::checkNumWins(const Cell* list, bool turn) {
+    std::set<int> mySet = {};
+    std::set<int> mySet2 = {};
+    int winPosition = 0;
+    int numWins = 0;
+    int pos;
+    if (list == nullptr) {
+        std::cout << "empty list\n";
+    } else {
+        const Cell* curr = list;
+        int column = 1;
+        while (curr != nullptr) {
+            if (static_cast<int>(curr->state) == turn){
+                mySet.insert(curr->position);
+                //std::cout << "[" << static_cast<int>(curr->state) << "] ";
+            } 
+            if (static_cast<int>(curr->state) == 2){
+                mySet2.insert(curr->position);
+                //std::cout << "[" << static_cast<int>(curr->state) << "] ";
+            }
+
+            curr = curr->next;
+        }
+    }
+    
+    if (mySet.count(1) && mySet.count(2) && mySet2.count(3)) {
+    // Top row, missing square 3
+    winPosition = 3;
+    numWins++;
+    }
+ if (mySet.count(1) && mySet.count(3) && mySet2.count(2)) {
+    // Top row, missing square 2
+     winPosition = 2;
+     numWins++;
+}
+ if (mySet.count(2) && mySet.count(3) && mySet2.count(1)) {
+    // Top row, missing square 1
+     winPosition = 1;
+     numWins++;
+}
+ if (mySet.count(4) && mySet.count(5) && mySet2.count(6)) {
+    // Middle row, missing square 6
+     winPosition = 6;
+     numWins++;
+}
+ if (mySet.count(4) && mySet.count(6) && mySet2.count(5)) {
+    // Middle row, missing square 5
+     winPosition = 5;
+     numWins++;
+}
+ if (mySet.count(5) && mySet.count(6) && mySet2.count(4)) {
+    // Middle row, missing square 4
+     winPosition = 4;
+     numWins++;
+}
+ if (mySet.count(7) && mySet.count(8) && mySet2.count(9)) {
+    // Bottom row, missing square 9
+    winPosition = 9;
+    numWins++;
+}
+ if (mySet.count(7) && mySet.count(9) && mySet2.count(8)) {
+    // Bottom row, missing square 8
+     winPosition = 8;
+     numWins++;
+}
+ if (mySet.count(8) && mySet.count(9) && mySet2.count(7)) {
+    // Bottom row, missing square 7
+    winPosition = 7;
+    numWins++;
+}
+ if (mySet.count(1) && mySet.count(4) && mySet2.count(7)) {
+    // Left column, missing square 7
+    winPosition = 7;
+    numWins++;
+}
+ if (mySet.count(1) && mySet.count(7) && mySet2.count(4)) {
+    // Left column, missing square 4
+     winPosition = 4;
+     numWins++;
+}
+ if (mySet.count(4) && mySet.count(7) && mySet2.count(1)) {
+    // Left column, missing square 1
+     winPosition = 1;
+     numWins++;
+}
+ if (mySet.count(2) && mySet.count(5) && mySet2.count(8)) {
+    // Middle column, missing square 8
+     winPosition = 8;
+     numWins++;
+}
+ if (mySet.count(2) && mySet.count(8) && mySet2.count(5)) {
+    // Middle column, missing square 5
+     winPosition = 5;
+     numWins++;
+}
+if (mySet.count(5) && mySet.count(8) && mySet2.count(2)) {
+    // Middle column, missing square 2
+    winPosition = 2;
+    numWins++;
+}
+ if (mySet.count(3) && mySet.count(6) && mySet2.count(9)) {
+    // Right column, missing square 9
+     winPosition = 9;
+     numWins++;
+}
+ if (mySet.count(3) && mySet.count(9) && mySet2.count(6)) {
+    // Right column, missing square 6
+     winPosition = 6;
+     numWins++;
+}
+ if (mySet.count(6) && mySet.count(9) && mySet2.count(3)) {
+    // Right column, missing square 3
+     winPosition = 3;
+     numWins++;
+}
+if (mySet.count(1) && mySet.count(5) && mySet2.count(9)) {
+    // Diagonal from top-left to bottom-right, missing square 9
+     winPosition = 9;
+     numWins++;
+}
+ if (mySet.count(1) && mySet.count(9) && mySet2.count(5)) {
+    // Diagonal from top-left to bottom-right, missing square 5
+     winPosition = 5;
+     numWins++;
+}
+ if (mySet.count(5) && mySet.count(9) && mySet2.count(1)) {
+    // Diagonal from top-left to bottom-right, missing square 1
+     winPosition = 1;
+     numWins++;
+}
+ if (mySet.count(3) && mySet.count(5) && mySet2.count(7)) {
+    // Diagonal from top-right to bottom-left, missing square 7
+     winPosition = 7;
+     numWins++;
+}
+ if (mySet.count(3) && mySet.count(7) && mySet2.count(5)) {
+    // Diagonal from top-right to bottom-left, missing square 5
+     winPosition = 5;
+     numWins++;
+}
+ if (mySet.count(5) && mySet.count(7) && mySet2.count(3)) {
+    // Diagonal from top-right to bottom-left, missing square 3
+    winPosition = 3;
+    numWins++;
+}
+    return numWins;
+   
+}
+
+
+
+
+
+bool Cell::checkGridFull(const Cell* list) {
+    std::set<int> mySet = {};
+    bool gridFull = false; // whether grid is fullly occupied
+    if (list == nullptr) {
+        std::cout << "empty list\n";
+    } else {
+        const Cell* curr = list; // pointer points at first cell object in list
+        int column = 1;
+        while (curr != nullptr) { // while the pointer does not point to a valid object or memory location
+             if (static_cast<int>(curr->state) != 2){ // If occupied cell either X or O
+                mySet.insert(curr->position); // Add cell position to set
+                }
+            curr = curr->next;
+        }
+    }
+  
+    if (mySet.size() == 9){ // If there are 9 occupied cells on the grid then the grid is full
+        gridFull = true;
+    }
+    return gridFull;
+}
+
+bool Cell::checkCorners(const Cell* list) {
+    std::set<int> mySet = {};
+    int cornersOccupied = false; // whether all gird corner positions are occupied
+    if (list == nullptr) {
+        std::cout << "empty list\n";
+    } else {
+        const Cell* curr = list;
+        int column = 1;
+        while (curr != nullptr) { // While pointer does not point to a valid object or memory location
+                if (static_cast<int>(curr->state) != 2){ // If occupied cell either X or O
+                mySet.insert(curr->position);  // Add cell position to set
+                 }
+            curr = curr->next; // Point pointer to next cell in list
+        }
+    }
+
+    if (mySet.count(1) && mySet.count(3) && mySet.count(7) && mySet.count(9)) { // If all corner positions are occupied set cornersOccpied
+        cornersOccupied = true;
+    }
+
+    return cornersOccupied;
+}
+
+bool Cell::OccupyCell(Cell* list, int position, bool turn) {
+    bool valid = false;
+    if (list == nullptr) {
+        std::cout << "empty list\n";
+    } else {
+        Cell* curr = list; // declare a pointer to point at first cell in list
+        while (curr != nullptr) { // while the pointer does not point to a valid object or memory location
+            if (curr->position ==  position){ // if the cell's position is equal to the selected position
+                if (curr->flagged == false){ // if the cell is not already occupied
+                    curr->state = static_cast<CellState>(static_cast<int>(turn)); // Set the state of the input position to match the input turn
+                    curr->flagged = true; // set flagged 
+                    valid = true; // a valid cell position was input
+                }
+            }
+            curr = curr->next; // curr points to next cell in the list
+        }
+    }
+    return valid;
+}
+
+bool Cell::UnOccupyCell(Cell* list, int position) {
+    bool valid = false;
+    if (list == nullptr) {
+        std::cout << "empty list\n";
+    } else {
+        Cell* curr = list; // declare a pointer to point at first cell in list
+        while (curr != nullptr) { // while the pointer does not point to a valid object or memory location
+            if (curr->position ==  position){ // if the cell's position is equal to the selected position
+                if (curr->flagged == true){ // if the cell IS already occupied
+                    
+                    curr->state = CellState::EMPTY; // Set the state of the input position to match the input turn
+                    curr->flagged = false; // set flagged 
+                    valid = true; // a valid cell position was input
+                }
+            }
+            curr = curr->next; // curr points to next cell in the list
+        }
+    }
+    return valid;
+}
+
+void Cell::deleteList(Cell*& list) {
+    while (list != nullptr) { // while not at end of list
+        Cell* next = list->next; // Point pointer at cell list points at
+        delete list; // delete object list points at
+        list = next; //list now points at object next points at
+    }
+}
+
+void Cell::printFile(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file) {
+        std::cerr << "Could not open file " << filename << std::endl;
+        return;
+    }
+
+    std::string name;
+    int position;
+    while (file >> name >> position) {
+        std::cout << "name: " << name << ", position: " << position << "\n";
+    }
+}
+
+std::vector<int> maxWins(int arr[], int size) {
+    // Initialize the largest value to the first element of the array
+    int max= arr[0];
+    int posMax = 0;
+    std::vector<int> vector;
+    // Iterate thu the array
+    for (int i = 0; i < size; i++) {
+        if (arr[i] > max) {
+            max = arr[i]; // Update max if a larger value is found
+           // posMax = i;
+        }
+    }
+
+    for (int i = 0; i < size; i++) { // Add to an empty vector the positions of all corners with maximum # of win possibilities
+        if (arr[i] == max) {
+            vector.push_back(i);
+        }
+    }
+    return vector; // Return vector
+}
+
+
+int generate1379(int num){
+int generated;
+    if (num == 1){ 
+                generated = 1;
+            } else if (num == 2){
+                generated = 3;
+            } else if (num == 3){
+                generated = 7;
+            } else if (num == 4){
+                generated = 9;
+            }
+            return generated;
+}
+
+Grid Grid::createGrid(const std::string& name) {
+    Cell* head = Cell::createCell("S9", 9); // Create head cell 
+    head = Cell::pushData("S8", 8, head); // Create and link 8 additional cells to list to create the grid
+    head = Cell::pushData("S7", 7, head);
+    head = Cell::pushData("S6", 6, head);
+    head = Cell::pushData("S5", 5, head);
+    head = Cell::pushData("S4", 4, head);
+    head = Cell::pushData("S3", 3, head);
+    head = Cell::pushData("S2", 2, head);
+    head = Cell::pushData("S1", 1, head);
+    return Grid(name, head);
+}
+
+void Grid::playAI(){ // THIS IS TIC TAC TOE LAN VERSION
+    std::string answer;
+    int position; // cell position on grid
+    turn = false; // game turn. set to AI turn by default
+    bool valid; // whether move is valid
+    int randomNumber; 
+    std::srand(std::time(0)); // seed the random number generator
+    // Cell::printGrid(head);
+    bool win = false; // whether game is won 
+    bool tie = false; // whether game is tied 
+    bool gridFull = false; // whether grid is fully occupied
+    int ans;
+    int randomIndex;
+
+
+    std::cout << "\nWelcome to Andre's Tic-Tac-Toe. You will play against an AI opponent named Grid Master. The grid cells are numbered 1 through 9. On your turn, use the corresponding keys to place a marker on the grid.\n\n";
+    
+    std::cout << "[1] [2] [3]\n";
+    std::cout << "[4] [5] [6]\n";
+    std::cout << "[7] [8] [9]\n\n";
+
+
+    std::cout << "Choose your turn: press '1' for the first turn or '2' for Grid Master to go first.\n";
+
+    std::cin >> ans;
+
+    if (ans == 1){
+        turn = true;
+        //std::cout << "You get the first move.\n";
+        Cell::printGrid(head);  
+
+    }else if(ans == 2){
+        //std::cout << " Grid Master gets the first move.\n";
+    }
+
+
+ //std::vector<int> vector();  ???? unresolved Q about assignment of function return to this
+    while(!(win||tie)){
+    if (turn == false){
+        std::cout << "Grid Master enter a position. \n";
+        if ((position = Cell::checkWinPossibility(head, turn)) != 0){ // Check if AI is able to win in single move
+        Cell::OccupyCell(head, position, turn); //Occupy cell winning cell
+        } else  if ((position = Cell::checkWinPossibility(head, !turn)) !=0 ){ // Check if player is able to in with single move
+        Cell::OccupyCell(head, position, turn);   // Occupy player's winning cell
+        } else if (!Cell::checkCorners(head)){
+            int b;
+            int numWins[4];
+           
+            for (int i = 0; i < 4; i++){
+                position = generate1379(i+1);
+                //std::cout << "\n";
+                valid = Cell::OccupyCell(head, position, turn);
+                //std::cout << "TEST: ";
+                //std::cout << "\n";
+                //Cell::printGrid(head);
+                if (valid){
+                numWins[i]  = Cell::checkNumWins(head, turn);
+                //std::cout << b << " ";
+                    Cell::UnOccupyCell(head, position);
+                }
+                else {
+                    numWins[i] = -1; 
+                }
+                
+            }
+            //std::cout << numWins;
+
+             
+            std::vector<int> vector2 = maxWins(numWins, 4);
+            // std::cout << rand() << "\n";
+            // std::cout << vector2.size() << "\n";
+            randomIndex = rand() % vector2.size(); // Generate a random index
+            position = vector2[randomIndex]; // Access the value at that index
+
+            //std::cout << position;
+            // std::cout << numWins[0];
+            // std::cout << numWins[1];
+            // std::cout << numWins[2];
+            //std::cout << numWins[3];
+
+            position = generate1379(position + 1);
+            valid = Cell::OccupyCell(head, position, turn); // corner
+        }
+        else{
+            Cell::OccupyCell(head, 5, turn); // Occupy center cell
+        }
+
+    }
+    else{
+        std::cout << "Player, enter a position. \n"; // Prompt player
+        std::cin >> position;  // Receive cell position from player
+        valid = Cell::OccupyCell(head, position, turn); // Occupy selected position
+
+        while(!valid){  // While player-selected position is occupied repeat prompt and input until selected position is not occupied
+            Cell::printGrid(head);  
+            std::cout << "Err: Cannot select an occupied cell. Try again. \n";
+            std::cin >> position; 
+            valid = Cell::OccupyCell(head, position, turn); 
+        }
+              
+
+    }
+        
+        win = Cell::checkWin(head, turn); // Check if the game has been won by either AI or player
+        gridFull = Cell::checkGridFull(head); // Check if every position on grid is occupied
+        if (gridFull && !win){ // If the grid is completely-occupied and neither AI nor player has won then set tie to true
+            tie = true;
+             std::cout << "It's a tie!\n";
+        } 
+
+        Cell::printGrid(head); // Print the grid 
+
+       
+        turn = !turn; // Switch AI to player turn or vice-versa
+    }
+
+    Cell::deleteList(head); // Delete the list of cell objects to prevent memory leaks
+    head = nullptr; // set initial pointer to nullptr
+    std::cout << ("\n");
+
+}
+
+
+void Grid::playTwoPlayer(){
+    
+
+
+
+}
+
+
+
+
+
+
+int main() { // THIS IS TIC TAC TOE LAN VERSION
+
+    std::string mode;
+
+    std::cout << "Pick game mode";
+    std::cin >> mode;
+
+    constexpr unsigned short PORT = 12345;
+    
+    try
+  {
+    // if (argc != 2)
+    // {
+    //   std::cerr << "Usage: client <host>" << std::endl;
+    //   return 1;
+    // }
+
+    boost::asio::io_context io_context;
+    tcp::resolver resolver(io_context);
+
+
+    tcp::resolver::results_type endpoints =
+    resolver.resolve("127.0.0.1", std::to_string(PORT));
+
+    tcp::socket socket(io_context);
+    boost::asio::connect(socket, endpoints);
+
+    std::cout << "!!!!";
+    
+   // std::array<char, 128> buf0 = {'1'};
+    boost::system::error_code error;
+    //std::string mode = "1";
+
+    socket.send(boost::asio::buffer(mode), 0, error);
+
+
+    // for (;;)
+    // {
+    //   std::array<char, 128> buf;
+    //   boost::system::error_code error;
+
+    //   //buf[0] = mode;
+
+    //   size_t len = socket.read_some(boost::asio::buffer(buf), error);
+    //  if (error == boost::asio::error::eof)
+    //     break; // Connection closed cleanly by peer.
+    //   else if (error)
+    //     throw boost::system::system_error(error); // Some other error.
+
+    //   //std::cout.write(buf.data(), len);
+    // }
+
+
+
+
+
+
+
+
+
+
+  }
+  catch (std::exception& e)
+  {
+    std::cerr << e.what() << std::endl;
+  }
+
+
+
+    char response;
+    
+
+    if (mode == "1"){
+        Grid grid1 = Grid::createGrid("Game 1"); // Create a grid object
+    
+        grid1.playAI(); // Play a game using grid object
+
+        std::cout << "Press '1' to play again. Press '2' to exit game.";
+        std::cin >> response;
+
+
+    while (response == '1'){
+         Grid grid2 = Grid::createGrid("2");
+         grid2.playAI();
+         std::cout << "Press '1' to play again. Press '2' to exit game.";
+         std::cin >> response;
+    }
+
+        
+    }
+    else if (mode == "2"){
+   
+
+
+    }
+
+
+    
+
+   
+    std::cout << "Thanks for playing!";
+    //Grid grid2 = Grid::createGrid("Game 2"); // Create a second grid object
+
+    //grid2.playGame(); // Play a game using grid object
+
+    return 0;
+}
