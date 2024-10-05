@@ -27,7 +27,7 @@ Tic-Tac-Toe with two game modes. The first mode is single-player mode in which t
    ./b2.exe
 
 
-
+## Download and run github files
 1. Clone the repository:
    ```bash
    git clone https://github.com/and-cuau/AI-Tic-Tac-Toe.git
