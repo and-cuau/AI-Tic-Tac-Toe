@@ -1,6 +1,5 @@
 # AI-Tic-Tac-Toe
-Tic-Tac-Toe with in C++ wih two game modes. The first mode is single-player mode in which the player competes against an AI opoponent. The second mode is two-player mode in which the player competes a second player over LAN. LAN connection is performed using the Boost.Asio library.
-
+Tic-Tac-Toe with in C++ wih two game modes. The first mode is single-player mode in which the player competes against an AI opoponent. The second mode is two-player mode in which the player competes a second player over LAN. LAN connection is performed using the Boost.Asio library. Designed for demonstration purposes, the program currently supports two-player mode on a single computer.
 
 ## Prerequisites
 - C++ compiler (gcc, g++)
