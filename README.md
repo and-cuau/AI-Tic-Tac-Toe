@@ -37,7 +37,7 @@ Tic-Tac-Toe with in C++ wih two game modes. The first mode is single-player mode
 
 3. Build tttserver.cpp:
    ```bash
-   g++ -I"C:\Users\andre\CPP_TTT\boost_1_86_0" tttserver.cpp -o tttserver -L"C:\Users\andre\CPP_TTT\boost_1_86_0\stage\lib" -lstdc++ "C:\Users\andre\CPP_TTT\boost_1_86_0\stage\lib\libboost_system-vc143-mt-x64-1_86.lib" -lws2_32
+   g++ -I"path\to\boost" tttserver.cpp -o tttserver -L"path\to\boost\stage\lib" -lstdc++ "path\to\boost\stage\lib\libboost_system-vc143-mt-x64-1_86.lib" -lws2_32
 
 4. Run the tttserver object file:
       ```bash
@@ -47,7 +47,7 @@ Tic-Tac-Toe with in C++ wih two game modes. The first mode is single-player mode
 
 6. Build tttclient.cpp:
    ```bash
-   g++ -I"C:\Users\andre\CPP_TTT\boost_1_86_0" tttclient.cpp -o tttclient -L"C:\Users\andre\CPP_TTT\boost_1_86_0\stage\lib" -lstdc++ "C:\Users\andre\CPP_TTT\boost_1_86_0\stage\lib\libboost_system-vc143-mt-x64-1_86.lib" -lws2_32
+   g++ -I"path\to\boost" tttclient.cpp -o tttclient -L"path\to\boost\stage\lib" -lstdc++ "path\to\boost\stage\lib\libboost_system-vc143-mt-x64-1_86.lib" -lws2_32
 
 7. Run the tttclient object file:
       ```bash
