@@ -39,22 +39,34 @@ Tic-Tac-Toe in C++ with two game modes. The first mode is single-player mode in 
    ```bash
    g++ -I"path\to\boost" tttserver.cpp -o tttserver -L"path\to\boost\stage\lib" -lstdc++ "path\to\boost\stage\lib\libboost_system-vc143-mt-x64-1_86.lib" -lws2_32
 
-4. Run the tttserver object file:
-      ```bash
-   ./tttserver
-
-5. Open another terminal
-
 6. Build tttclient.cpp:
    ```bash
    g++ -I"path\to\boost" tttclient.cpp -o tttclient -L"path\to\boost\stage\lib" -lstdc++ "path\to\boost\stage\lib\libboost_system-vc143-mt-x64-1_86.lib" -lws2_32
 
-7. Run the tttclient object file:
+
+# Play single player mode
+
+1. Run the tttclient object file:
       ```bash
    ./tttclient
 
+1. Enter '1'
+
+# Play two player mode
+
+1. Run the tttserver object file:
+      ```bash
+   ./tttserver
+      
+2. Open another terminal
+
+3. Run the tttclient object file:
+      ```bash
+   ./tttclient
+
+4. Enter '2'.
+
+5. A new terminal will appear. Enter '2' again
 
 
-10. Repeat steps 3-7 excluding steps 3 and 6 to play again.
-   
 
