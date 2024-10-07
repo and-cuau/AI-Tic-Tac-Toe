@@ -725,15 +725,38 @@ std::cin >> mode;
 return mode;
 }
 
+int launchExecutables()
+{
+    // Executable filenames
+    std::string exe1 = "./tttserver";
+    std::string exe2 = "./tttclient";
+
+    // Launch the first executable
+    int result1 = std::system(exe1.c_str());
+    if (result1 != 0) {
+        std::cerr << "Failed to launch executable 1.\n";
+        return 1;
+    }
+
+    // Launch the second executable
+    int result2 = std::system(exe2.c_str());
+    if (result2 != 0) {
+        std::cerr << "Failed to launch executable 2.\n";
+        return 1;
+    }
+
+    return 0;
+}
+
+
+
+
 
 int main() { 
 
     std::string mode;
 
     mode = intro(); // prompt player to choose mode. return mode
-
-    
-
 
     std::string response;
     
@@ -764,6 +787,10 @@ int main() {
    bool turn1 = 0;
    std::string turnPosition;
    std::string position;
+
+
+    //std::string serverExe = "wt.exe -p \"Command Prompt\" -d . cmd /c tttserver";
+    //int result2 = std::system(serverExe.c_str());
 
     constexpr unsigned short PORT = 12345;
 
@@ -796,6 +823,9 @@ int main() {
 
 
     if (!turn){
+            std::string clientExe = "wt.exe -p \"Command Prompt\" -d . cmd /c tttclient";
+            int result1 = std::system(clientExe.c_str());
+   
         std::cout << "Waiting for player 2 to connect....\n\n";
         size_t len = socket.read_some(boost::asio::buffer(message), error);
 
