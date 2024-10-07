@@ -587,7 +587,7 @@ void Grid::playAI(){
     int randomIndex;
 
 
-    std::cout << "\nWelcome to Andre's Tic-Tac-Toe. You will play against an AI opponent named Grid Master. The grid cells are numbered 1 through 9. On your turn, use the corresponding keys to place a marker on the grid.\n\n";
+    std::cout << "\nYou have selected single player mode. You will play against an AI opponent named Grid Master. The grid cells are numbered 1 through 9. On your turn, use the corresponding keys to place a marker on the grid.\n\n";
     
     std::cout << "[1] [2] [3]\n";
     std::cout << "[4] [5] [6]\n";
@@ -710,7 +710,7 @@ static void printGrid(std::string gridStr){
             column++;
         
         }
-        std::cout << "\n\n";
+        std::cout << "\n";
 }
 
 bool stringToBool(const std::string& str) {
@@ -782,9 +782,18 @@ int main() {
 
     size_t len = socket.read_some(boost::asio::buffer(message), error);
     bool turn;
-    std::cout << "You are connected as player " << stringToBool(message) + 1  << ".\n";
+
+
+    std::cout << "\nYou have selected two player mode. You will play against against an online opponent. The grid cells are numbered 1 through 9. On your turn, use the corresponding keys to place a marker on the grid.\n\n";
+    
+    std::cout << "[1] [2] [3]\n";
+    std::cout << "[4] [5] [6]\n";
+    std::cout << "[7] [8] [9]\n\n";
 
     turn = stringToBool(message);
+
+    std::cout << "You are connected as player " << turn + 1  << ".\n";
+
 
 
     printGrid("22222222");
@@ -792,7 +801,7 @@ int main() {
 
       
             while (!(win||tie)){
-                std::cout << "Player " << turn1 + 1 << " enter a position\n";
+                std::cout << "Player " << turn1 + 1 << "'s turn. Enter a position.\n";
                  std::string message(1024, '\0');
                  boost::system::error_code error;
                 if (!turn){
@@ -807,7 +816,7 @@ int main() {
                  printGrid(message);
                  //std::cout << message;                   
                     if (message[9] == 'w'){
-                         std::cout << "Player " << turn1 + 1 << " wins!\n";
+                         std::cout << "Player " << turn1 + 1 << " wins!\n\n";
                          break;
                     } 
                     if (message[9] == 't'){
