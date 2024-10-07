@@ -766,17 +766,6 @@ int main() {
     
         grid1.playAI(); // Play a game using grid object
 
-        std::cout << "Press '1' to play again. Press '2' to exit game.";
-        std::cin >> response;
-
-
-    while (response == "1"){
-         Grid grid2 = Grid::createGrid("2");
-         grid2.playAI();
-         std::cout << "Press '1' to play again. Press '2' to exit game.";
-         std::cin >> response;
-    }
-
         
     }
     else if (mode == "2"){
