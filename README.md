@@ -53,13 +53,8 @@ Tic-Tac-Toe in C++ with two game modes. The first mode is single-player mode in 
       ```bash
    ./tttclient
 
-8. Open another terminal
-
-9. Run the tttclient object file again:
-      ```bash
-   ./tttclient
 
 
-10. Repeat steps 3.-9. excluding steps 3. and 6. to play again.
+10. Repeat steps 3-7 excluding steps 3 and 6 to play again.
    
 
