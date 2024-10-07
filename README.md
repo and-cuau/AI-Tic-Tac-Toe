@@ -26,7 +26,7 @@ Tic-Tac-Toe in C++ with two game modes. The first mode is single-player mode in 
    ./b2.exe
 
 
-## Download and run GitHub files
+## Download and build GitHub files
 1. Clone the repository:
    ```bash
    git clone https://github.com/and-cuau/AI-Tic-Tac-Toe.git
@@ -44,7 +44,7 @@ Tic-Tac-Toe in C++ with two game modes. The first mode is single-player mode in 
    g++ -I"path\to\boost" tttclient.cpp -o tttclient -L"path\to\boost\stage\lib" -lstdc++ "path\to\boost\stage\lib\libboost_system-vc143-mt-x64-1_86.lib" -lws2_32
 
 
-# Play single player mode
+## Play single player mode
 
 1. Run the tttclient object file:
       ```bash
@@ -52,7 +52,7 @@ Tic-Tac-Toe in C++ with two game modes. The first mode is single-player mode in 
 
 1. Enter '1'
 
-# Play two player mode
+## Play two player mode
 
 1. Run the tttserver object file:
       ```bash
