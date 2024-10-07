@@ -782,7 +782,7 @@ int main() {
 
     size_t len = socket.read_some(boost::asio::buffer(message), error);
     bool turn;
-    std::cout << "You are connected as player " + message +".\n";
+    std::cout << "You are connected as player " << stringToBool(message) + 1  << ".\n";
 
     turn = stringToBool(message);
 
@@ -792,7 +792,7 @@ int main() {
 
       
             while (!(win||tie)){
-                std::cout << "Player " << turn1 << " enter a position\n";
+                std::cout << "Player " << turn1 + 1 << " enter a position\n";
                  std::string message(1024, '\0');
                  boost::system::error_code error;
                 if (!turn){
@@ -806,7 +806,12 @@ int main() {
            
                  printGrid(message);
                  //std::cout << message;                   
-                    if (message[9] == 'w' || message[9] == 't'){
+                    if (message[9] == 'w'){
+                         std::cout << "Player " << turn1 + 1 << " wins!\n";
+                         break;
+                    } 
+                    if (message[9] == 't'){
+                        std::cout << "It's a tie!\n";
                         break;
                     }
                 turn = !turn;
