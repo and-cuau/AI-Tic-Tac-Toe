@@ -179,9 +179,9 @@ bool Cell::checkWin(const Cell* list, bool turn) {
       )// Passes only if set contains winning combination of positions
       {
         if (turn){ //Displays win message depending on selected turn
-             std::cout << "Player wins!\n";
+           //  std::cout << "Player wins!\n";
         }else{
-             std::cout << "Grid Master wins!\n";
+           //  std::cout << "Grid Master wins!\n";
         }
         win = true; // the game has been won
     }
@@ -831,7 +831,7 @@ void Grid::playTwoPlayer(){
             std::string gridStr = Cell::getString(head);
 
             if (win){
-                 std::cout << "Win!\n";
+                 // std::cout << "Win!\n";
                  win = true;
                  gridStr += "w";
             }
@@ -857,8 +857,6 @@ void Grid::playTwoPlayer(){
   {
     std::cerr << e.what() << std::endl;
   }
-
-    std::cout << "exited try-catch and for-loop";
 
     Cell::deleteList(head); // Delete the list of cell objects to prevent memory leaks
     head = nullptr; // set initial pointer to nullptr
@@ -889,6 +887,9 @@ int main(int argc, char* argv[]) {
 
     std::string response;
     std::string mode;
+    mode = "2";
+
+    std::cout << "\nServer has been successfully initialized and is now ready to accept connections.\n";
 
     Grid grid1 = Grid::createGrid("Game 1"); // Create a grid object
 
@@ -919,7 +920,10 @@ int main(int argc, char* argv[]) {
         }
 
    }
+
+    std::cout << "Thanks for playing!";
     
+
     return 0; // g++ -I"C:\Users\andre\CPP_TTT\boost_1_86_0" tttlan.cpp -o test_boost -L"C:\Users\andre\CPP_TTT\boost_1_86_0\stage\lib" -lstdc++ "C:\Users\andre\CPP_TTT\boost_1_86_0\stage\lib\libboost_system-vc143-mt-x64-1_86.lib" -lws2_32
 }
 
