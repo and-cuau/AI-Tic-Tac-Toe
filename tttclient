@@ -725,33 +725,6 @@ std::cin >> mode;
 return mode;
 }
 
-int launchExecutables()
-{
-    // Executable filenames
-    std::string exe1 = "./tttserver";
-    std::string exe2 = "./tttclient";
-
-    // Launch the first executable
-    int result1 = std::system(exe1.c_str());
-    if (result1 != 0) {
-        std::cerr << "Failed to launch executable 1.\n";
-        return 1;
-    }
-
-    // Launch the second executable
-    int result2 = std::system(exe2.c_str());
-    if (result2 != 0) {
-        std::cerr << "Failed to launch executable 2.\n";
-        return 1;
-    }
-
-    return 0;
-}
-
-
-
-
-
 int main() { 
 
     std::string mode;
