@@ -786,8 +786,6 @@ void Grid::playTwoPlayer(){
         tcp::acceptor acceptor2(io_context, tcp::endpoint(tcp::v4(), PORT));
         tcp::socket socket2(io_context);
         acceptor.accept(socket2);
-        
-
        
         message = "1";
    
@@ -922,8 +920,6 @@ int main(int argc, char* argv[]) {
         }
 
    }
-
-    std::cout << "Thanks for playing!";
     
 
     return 0; // g++ -I"C:\Users\andre\CPP_TTT\boost_1_86_0" tttlan.cpp -o test_boost -L"C:\Users\andre\CPP_TTT\boost_1_86_0\stage\lib" -lstdc++ "C:\Users\andre\CPP_TTT\boost_1_86_0\stage\lib\libboost_system-vc143-mt-x64-1_86.lib" -lws2_32
