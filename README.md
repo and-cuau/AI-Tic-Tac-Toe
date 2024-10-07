@@ -43,6 +43,7 @@ Tic-Tac-Toe in C++ with two game modes. The first mode is single-player mode in 
    ```bash
    g++ -I"path\to\boost" tttclient.cpp -o tttclient -L"path\to\boost\stage\lib" -lstdc++ "path\to\boost\stage\lib\libboost_system-vc143-mt-x64-1_86.lib" -lws2_32
 
+## Play game
 
 ## Play single player mode
 
@@ -50,7 +51,7 @@ Tic-Tac-Toe in C++ with two game modes. The first mode is single-player mode in 
       ```bash
    ./tttclient
 
-1. Enter '1'
+1. Enter '1'.
 
 ## Play two player mode
 
