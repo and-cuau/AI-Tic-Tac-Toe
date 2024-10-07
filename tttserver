@@ -793,6 +793,8 @@ void Grid::playTwoPlayer(){
    
         boost::asio::write(socket2, boost::asio::buffer(message), ignored_error);
 
+        message = "P2 Connected";
+        boost::asio::write(socket, boost::asio::buffer(message), ignored_error);
 
         for (;;)
         {
@@ -889,7 +891,7 @@ int main(int argc, char* argv[]) {
     std::string mode;
     mode = "2";
 
-    std::cout << "\nServer has been successfully initialized and is now ready to accept connections.\n";
+    std::cout << "\nServer has been initialized successfully and is now ready to accept connections.\n";
 
     Grid grid1 = Grid::createGrid("Game 1"); // Create a grid object
 
