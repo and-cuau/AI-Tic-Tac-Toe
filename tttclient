@@ -792,12 +792,16 @@ int main() {
 
     turn = stringToBool(message);
 
-    std::cout << "You are connected as player " << turn + 1  << ".\n";
+    std::cout << "You are connected as player " << turn + 1  << ".\n\n";
 
 
+    if (!turn){
+        std::cout << "Waiting for player 2 to connect....\n\n";
+        size_t len = socket.read_some(boost::asio::buffer(message), error);
+
+    }
 
     printGrid("22222222");
-
 
       
             while (!(win||tie)){
@@ -827,7 +831,6 @@ int main() {
                 turn1 = !turn1;
             }
     }
-
 
    
     std::cout << "Thanks for playing!";
