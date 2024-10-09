@@ -67,7 +67,7 @@ Tic-Tac-Toe in C++ with two game modes. The first mode is single-player mode in 
 
 4. Enter '2'.
 
-5. A new terminal will appear. Enter '2' again.
+5. A second terminal will appear. Enter '2' in the new terminal.
 
 
 
