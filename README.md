@@ -21,7 +21,7 @@ Tic-Tac-Toe in C++ with two game modes. The first mode is single-player mode in 
    ```bash
    ./bootstrap.bat
 
-2. Run bootstrap.bat:
+2. Run b2.exe:
    ```bash
    ./b2.exe
 
