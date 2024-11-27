@@ -29,17 +29,16 @@ enum class CellState {
 };
 
 class Cell {
-public:
     std::string name; // Name of game 
     int position; // Position of the cell on the grid. Can hold 1 thru 9
     CellState state = CellState::EMPTY; // State of a cell. Can hold OCCUPIED_O, OCCUPIED_X, EMPTY
     Cell* next; // Pointer to the next cell in the list
     bool flagged = false; // Whether or not cell has been used
-    
-
     Cell(const std::string& name, int position) 
         : name(name), position(position), next(nullptr) {}
+    void setChecked(bool turn); 
 
+public:
     static Cell* createCell(const std::string& name, int position);
     static Cell* pushData(const std::string& name, int position, Cell* list);
     static void printGrid(const Cell* list);
@@ -312,9 +311,6 @@ else if (mySet.count(5) && mySet.count(7) && mySet2.count(3)) {
     winPosition = 3;
 }
 
-
-
-
     return winPosition;
 
     // std::cout << "NULL\n\n";
@@ -469,10 +465,6 @@ if (mySet.count(1) && mySet.count(5) && mySet2.count(9)) {
    
 }
 
-
-
-
-
 bool Cell::checkGridFull(const Cell* list) {
     std::set<int> mySet = {};
     bool gridFull = false; // whether grid is fullly occupied
@@ -537,6 +529,13 @@ bool Cell::OccupyCell(Cell* list, int position, bool turn) {
     }
     return valid;
 }
+
+
+void Cell::setChecked(bool turn){
+    state = static_cast<CellState>(static_cast<int>(turn)); // Set the state of the input position to match the input turn
+    flagged = true; // set flagged
+}
+
 
 bool Cell::UnOccupyCell(Cell* list, int position) {
     bool valid = false;
@@ -770,9 +769,9 @@ void Grid::playTwoPlayer(){
 
 
     try{
-     boost::asio::io_context io_context;
+        boost::asio::io_context io_context;
      //A ip::tcp::acceptor objectto listen for new connections. Set to listen on TCP port 12345,  IP version 4.
-    tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), PORT));
+        tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), PORT));
      // Socket for connection to the client, block until connected
         tcp::socket socket(io_context);
         acceptor.accept(socket);
@@ -822,8 +821,6 @@ void Grid::playTwoPlayer(){
             valid = Cell::OccupyCell(head, position, turn);
 
             win = Cell::checkWin(head, turn);
-
-
            }
 
             turn = !turn;
@@ -844,7 +841,6 @@ void Grid::playTwoPlayer(){
             } 
         
             Cell::printGrid(head);
-        
 
             message = gridStr;
             boost::system::error_code ignored_error;
@@ -860,7 +856,7 @@ void Grid::playTwoPlayer(){
 
     Cell::deleteList(head); // Delete the list of cell objects to prevent memory leaks
     head = nullptr; // set initial pointer to nullptr
-    std::cout << ("\n");
+    std::cout << ("\n"); 
 
 }
 
@@ -920,8 +916,9 @@ int main(int argc, char* argv[]) {
         }
 
    }
-    
+
 
     return 0; // g++ -I"C:\Users\andre\CPP_TTT\boost_1_86_0" tttlan.cpp -o test_boost -L"C:\Users\andre\CPP_TTT\boost_1_86_0\stage\lib" -lstdc++ "C:\Users\andre\CPP_TTT\boost_1_86_0\stage\lib\libboost_system-vc143-mt-x64-1_86.lib" -lws2_32
 }
+
 
