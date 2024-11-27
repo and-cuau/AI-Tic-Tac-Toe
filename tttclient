@@ -27,17 +27,16 @@ enum class CellState {
 };
 
 class Cell {
-public:
     std::string name; // Name of game 
     int position; // Position of the cell on the grid. Can hold 1 thru 9
     CellState state = CellState::EMPTY; // State of a cell. Can hold OCCUPIED_O, OCCUPIED_X, EMPTY
     Cell* next; // Pointer to the next cell in the list
     bool flagged = false; // Whether or not cell has been used
-    
-
     Cell(const std::string& name, int position) 
         : name(name), position(position), next(nullptr) {}
+    void setChecked(bool turn); 
 
+public:
     static Cell* createCell(const std::string& name, int position);
     static Cell* pushData(const std::string& name, int position, Cell* list);
     static void printGrid(const Cell* list);
@@ -64,9 +63,7 @@ class Grid{
     static Grid createGrid(const std::string& name);
     void playAI();
     void playTwoPlayer();
-    
 };
-
 
 Cell* Cell::createCell(const std::string& name, int position) {
     return new Cell(name, position); // Returns a cell object with selected name and position
@@ -257,10 +254,6 @@ else if (mySet.count(5) && mySet.count(7) && mySet2.count(3)) {
     // Diagonal from top-right to bottom-left, missing square 3
     winPosition = 3;
 }
-
-
-
-
     return winPosition;
 
 }
@@ -412,10 +405,6 @@ if (mySet.count(1) && mySet.count(5) && mySet2.count(9)) {
    
 }
 
-
-
-
-
 bool Cell::checkGridFull(const Cell* list) {
     std::set<int> mySet = {};
     bool gridFull = false; // whether grid is fullly occupied
@@ -462,6 +451,7 @@ bool Cell::checkCorners(const Cell* list) {
 }
 
 bool Cell::OccupyCell(Cell* list, int position, bool turn) {
+    
     bool valid = false;
     if (list == nullptr) {
         std::cout << "empty list\n";
@@ -470,8 +460,7 @@ bool Cell::OccupyCell(Cell* list, int position, bool turn) {
         while (curr != nullptr) { // while the pointer does not point to a valid object or memory location
             if (curr->position ==  position){ // if the cell's position is equal to the selected position
                 if (curr->flagged == false){ // if the cell is not already occupied
-                    curr->state = static_cast<CellState>(static_cast<int>(turn)); // Set the state of the input position to match the input turn
-                    curr->flagged = true; // set flagged 
+                    (*curr).setChecked(turn);
                     valid = true; // a valid cell position was input
                 }
             }
@@ -479,6 +468,11 @@ bool Cell::OccupyCell(Cell* list, int position, bool turn) {
         }
     }
     return valid;
+}
+
+void Cell::setChecked(bool turn){
+    state = static_cast<CellState>(static_cast<int>(turn)); // Set the state of the input position to match the input turn
+    flagged = true; // set flagged
 }
 
 bool Cell::UnOccupyCell(Cell* list, int position) {
@@ -725,6 +719,33 @@ std::cin >> mode;
 return mode;
 }
 
+int launchExecutables()
+{
+    // Executable filenames
+    std::string exe1 = "./tttserver";
+    std::string exe2 = "./tttclient";
+
+    // Launch the first executable
+    int result1 = std::system(exe1.c_str());
+    if (result1 != 0) {
+        std::cerr << "Failed to launch executable 1.\n";
+        return 1;
+    }
+
+    // Launch the second executable
+    int result2 = std::system(exe2.c_str());
+    if (result2 != 0) {
+        std::cerr << "Failed to launch executable 2.\n";
+        return 1;
+    }
+
+    return 0;
+}
+
+
+
+
+
 int main() { 
 
     std::string mode;
@@ -738,6 +759,17 @@ int main() {
         Grid grid1 = Grid::createGrid("Game 1"); // Create a grid object
     
         grid1.playAI(); // Play a game using grid object
+
+        std::cout << "Press '1' to play again. Press '2' to exit game.";
+        std::cin >> response;
+
+
+    while (response == "1"){
+         Grid grid2 = Grid::createGrid("2");
+         grid2.playAI();
+         std::cout << "Press '1' to play again. Press '2' to exit game.";
+         std::cin >> response;
+    }
 
         
     }
