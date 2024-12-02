@@ -15,7 +15,6 @@ using boost::asio::ip::tcp;
 
 #include <iostream>
 
-
 #include <cstring>
 
 int numGames = 0;
@@ -48,8 +47,6 @@ public:
     static bool OccupyCell(Cell* list, int position, bool turn);
     static bool UnOccupyCell(Cell* list, int position);
     static void deleteList(Cell*& list);
-    static void printFile(const std::string& filename);
-    static double maxGrade(const Cell* list);
 };
 
 class Grid{
@@ -429,7 +426,7 @@ bool Cell::checkGridFull(const Cell* list) {
 
 bool Cell::checkCorners(const Cell* list) {
     std::set<int> mySet = {};
-    int cornersOccupied = false; // whether all gird corner positions are occupied
+    int cornersOccupied = false; // whether all grid corner positions are occupied
     if (list == nullptr) {
         std::cout << "empty list\n";
     } else {
@@ -483,8 +480,7 @@ bool Cell::UnOccupyCell(Cell* list, int position) {
         Cell* curr = list; // declare a pointer to point at first cell in list
         while (curr != nullptr) { // while the pointer does not point to a valid object or memory location
             if (curr->position ==  position){ // if the cell's position is equal to the selected position
-                if (curr->flagged == true){ // if the cell IS already occupied
-                    
+                if (curr->flagged == true){ // if the cell IS already occupied 
                     curr->state = CellState::EMPTY; // Set the state of the input position to match the input turn
                     curr->flagged = false; // set flagged 
                     valid = true; // a valid cell position was input
@@ -504,19 +500,6 @@ void Cell::deleteList(Cell*& list) {
     }
 }
 
-void Cell::printFile(const std::string& filename) {
-    std::ifstream file(filename);
-    if (!file) {
-        std::cerr << "Could not open file " << filename << std::endl;
-        return;
-    }
-
-    std::string name;
-    int position;
-    while (file >> name >> position) {
-        std::cout << "name: " << name << ", position: " << position << "\n";
-    }
-}
 
 std::vector<int> maxWins(int arr[], int size) {
     // Initialize the largest value to the first element of the array
@@ -608,7 +591,7 @@ void Grid::playAI(){
         std::cout << "Grid Master enter a position. \n";
         if ((position = Cell::checkWinPossibility(head, turn)) != 0){ // Check if AI is able to win in single move
         Cell::OccupyCell(head, position, turn); //Occupy cell winning cell
-        } else  if ((position = Cell::checkWinPossibility(head, !turn)) !=0 ){ // Check if player is able to in with single move
+        } else  if ((position = Cell::checkWinPossibility(head, !turn)) !=0 ){ // Check if player is able to win with single move
         Cell::OccupyCell(head, position, turn);   // Occupy player's winning cell
         } else if (!Cell::checkCorners(head)){
             int b;
@@ -791,6 +774,8 @@ int main() {
     boost::asio::io_context io_context;
     tcp::resolver resolver(io_context);
 
+    
+    // socket.connect(tcp::endpoint(boost::asio::ip::address::from_string("192.168.1.100"), 12345));
 
     tcp::resolver::results_type endpoints =
     resolver.resolve("127.0.0.1", std::to_string(PORT));
@@ -826,7 +811,6 @@ int main() {
     }
 
     printGrid("22222222");
-
       
             while (!(win||tie)){
                 std::cout << "Player " << turn1 + 1 << "'s turn. Enter a position.\n";
